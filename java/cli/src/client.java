@@ -30,162 +30,145 @@ public class client {
                 if (!isAuthenticated) {
                     if (userInput.equalsIgnoreCase("register")) {
                         System.out.print("Enter username: ");
-                        // String username = stdIn.readLine();
+                        String username = stdIn.readLine();
 
-                        // System.out.print("Enter contact: ");
-                        // String contact = stdIn.readLine();
+                        System.out.print("Enter first name: ");
+                        String firstName = stdIn.readLine();
 
-                        // System.out.print("Enter password: ");
-                        // String password = stdIn.readLine();
+                        System.out.print("Enter last name: ");
+                        String lastName = stdIn.readLine();
 
-                        // out.println(userInput);
-                        // out.println(username);
-                        // out.println(contact);
-                        // out.println(password);
+                        System.out.print("Enter email: ");
+                        String emailAddress = stdIn.readLine();
 
-                        // String response = in.readLine();
-                        // System.out.println("Please save this member number somewhere with you: " +
-                        // response);
+                        System.out.print("Enter date of birth(yyyy/mm/dd): ");
+                        String date_of_birth = stdIn.readLine();
 
-                        // System.out.println("Registration details sent. Please login.");
+                        System.out.print("Enter school registration number: ");
+                        String school_registration_number = stdIn.readLine();
 
-                        // } else if (userInput.equalsIgnoreCase("login")) {
-                        // System.out.print("Enter username: ");
-                        // String username = stdIn.readLine();
+                        System.out.print("Enter absolute path of the image file(C:\\Users\\...): ");
+                        String image_file = stdIn.readLine();
 
-                        // System.out.print("Enter password: ");
-                        // String password = stdIn.readLine();
+                        out.println(userInput);
+                        out.println(username);
+                        out.println(firstName);
+                        out.println(lastName);
+                        out.println(emailAddress);
+                        out.println(date_of_birth);
+                        out.println(school_registration_number);
+                        out.println(image_file);
 
-                        // out.println(userInput);
-                        // out.println(username);
-                        // out.println(password);
-                        // String response = in.readLine();
-                        // System.out.println("Server response: " + response);
+                        String response = in.readLine();
+                        if (response.startsWith("Error")) {
+                            System.out.println("Server response: " + response);
+                        } else {
+                            System.out.println("Registration details sent. Please type login to continue.");
+                        }
 
-                        // if (response.equals("Login Successful!")) {
-                        // System.out.println("Login successful");
-                        // System.out.println(
-                        // "Input a command of your choice 'Deposit / CheckStatement/ requestLoan/
-                        // LoanRequestStatus'");
-                        // isAuthenticated = true;
-                        // } else if (response.equals("Invalid Username or Password. Login Failed")) {
-                        // loginAttempts++;
+                    } else if (userInput.equalsIgnoreCase("login")) {
 
-                        // if (loginAttempts >= 3) {
-                        // System.out.println(
-                        // "Login failed. You have reached the maximum number of login attempts.");
-                        // System.out.println("Initiating password recovery...");
-                        // String response1 = in.readLine();
-                        // System.out.println("Server response: " + response1);
-                        // System.out.print("Enter member number: ");
-                        // String memberNumber = stdIn.readLine();
-
-                        // System.out.print("Enter phone number: ");
-                        // String phoneNumber = stdIn.readLine();
-
-                        // out.println("recoverPassword");
-                        // out.println(memberNumber);
-                        // out.println(phoneNumber);
-
-                        // String recoverPasswordResponse = in.readLine();
-                        // System.out.println("Server response: " + recoverPasswordResponse);
-                        // break;
-                        // }
-                        // }
-                        // } else {
-                        // System.out.println("You need to log in or register to access this command.");
-                        // }
-
-                        // } else {
-                        // if (userInput.equalsIgnoreCase("deposit")) {
-
-                        // out.println(userInput);
-                        // System.out.print("Enter amount of money you want deposited: ");
-                        // double amount = Double.parseDouble(stdIn.readLine());
-
-                        // System.out.print("Enter Receipt Number of Deposit: ");
-                        // int receipt_no = Integer.parseInt(stdIn.readLine());
-
-                        // System.out.print("Enter Date Deposited In the Format yyyy-mm-dd: ");
-                        // String dateDeposited = stdIn.readLine();
-
-                        // out.println(amount);
-                        // out.println(receipt_no);
-                        // out.println(dateDeposited);
-
-                        // String response = in.readLine();
-
-                        // if (response.startsWith("Deposit Successful!")) {
-                        // System.out.println(response);
-                        // System.out.println(
-                        // "Input a command of your choice 'Deposit / CheckStatement/ requestLoan/
-                        // LoanRequestStatus'");
-                        // } else if (response.equals("Error: Receipt number already exists.")) {
-                        // System.out.println("Error: You have entered a duplicate receipt number.
-                        // Please try again.");
-                        // } else {
-                        // System.out.println("Deposit failed. Please try again.");
-                        // }
-
-                        // } else if (userInput.equalsIgnoreCase("requestLoan")) {
-
-                        // System.out.print("Enter amount of loan needed: ");
-                        // double loan_amount = Double.parseDouble(stdIn.readLine());
-
-                        // System.out.print("Enter the payment period in months: ");
-                        // int payment_period = Integer.parseInt(stdIn.readLine());
-
-                        // out.println(userInput);
-                        // out.println(loan_amount);
-                        // out.println(payment_period);
-
-                        // String response = in.readLine();
-                        // if (response.startsWith("Insufficient funds")) {
-                        // System.out.println(response);
-
-                        // } else if (response.startsWith("Error: Loan amount")) {
-                        // System.out.println(response);
-
-                        // } else if (response.startsWith("Error: You have already requested")) {
-                        // System.out.println(response);
-
-                        // } else {
-                        // System.out.println(
-                        // "Loan request submited, Take the loan application number and save it for
-                        // further reference");
-                        // System.out.println("Loan application number: " + response);
-                        // }
-                        // } else if (userInput.equalsIgnoreCase("LoanRequestStatus")) {
-                        // System.out.print("Enter the loan application number: ");
-                        // String loan_application_number = stdIn.readLine();
-                        // out.println(userInput);
-                        // out.println(loan_application_number);
-
-                        // String response = in.readLine();
-
-                        // if (response.startsWith("Pending")) {
-                        // System.out.println(response);
-                        // } else {
-                        // System.out.println("Error! Incorrect loan application number");
-                        // }
-
-                        // } else if (userInput.equalsIgnoreCase("checkStatement")) {
-                        // System.out.print("Enter start date of statement In the Format yyyy-mm-dd: ");
-                        // String startDate = stdIn.readLine();
-
-                        // System.out.print("Enter end date of statement In the Format yyyy-mm-dd: ");
-                        // String endDate = stdIn.readLine();
-
-                        // out.println(userInput);
-                        // out.println(startDate);
-                        // out.println(endDate);
-                    } else {
-                        System.out.println("Unknown Command");
+                        System.out.println("Are you a Student or School Representative?");
                         System.out.println(
-                                "Available commands: 'Deposit / CheckStatement/ requestLoan/LoanRequestStatus'");
+                                "Enter 'student' for Student or 'representative' for School Representative: ");
+                        String loginType = stdIn.readLine();
+
+                        // Student login
+                        if (loginType.equalsIgnoreCase("student")) {
+                            System.out.print("Enter username: ");
+                            String username = stdIn.readLine();
+
+                            System.out.print("Enter school registration number: ");
+                            String schoolRegistrationNumber = stdIn.readLine();
+
+                            out.println(userInput);
+                            out.println("student");
+                            out.println(username);
+                            out.println(schoolRegistrationNumber);
+
+                        } else if (loginType.equalsIgnoreCase("representative")) {
+                            System.out.print("Enter representative name: ");
+                            String representativeName = stdIn.readLine();
+
+                            System.out.print("Enter school registration number: ");
+                            String schoolRegistrationNumber = stdIn.readLine();
+
+                            out.println(userInput);
+                            out.println("representative");
+                            out.println(representativeName);
+                            out.println(schoolRegistrationNumber);
+
+                        } else {
+                            System.out
+                                    .println("Invalid login type. Please enter 'student' or 'representative'.");
+                            break;
+                        }
+
+                        String response = in.readLine();
+                        System.out.println("Server response: " + response);
+
+                        if (response.startsWith("Login Successful!")) {
+                            System.out.println("Login successful");
+                            System.out.println("        ");
+
+                            if (loginType.equalsIgnoreCase("Student")) {
+                                System.out.println("######################################################");
+                                System.out.println("Welcome to the School Students' System ");
+                                System.out.println("          ");
+                                System.out.println("Input a command of your choice like 'viewChallenges'");
+
+                            } else if (loginType.equalsIgnoreCase("representative")) {
+                                System.out.println("######################################################");
+                                System.out.println("Welcome to the School Representatives' System ");
+                                System.out.println("          ");
+                                System.out.println("Input a command of your choice like 'viewApplicants'");
+                            }
+                            isAuthenticated = true;
+                        } else if (response.equals("Invalid Username or School Registration Number. Login Failed")) {
+                            System.out.println("Invalid Username or School Registration Number. Login Failed");
+                        } else {
+                            System.out.println("Login Failed, Try Again");
+                        }
+                    }
+                } else if (isAuthenticated) {
+                    if (userInput.equalsIgnoreCase("viewApplicants")) {
+                        out.println(userInput);
+                        String response = in.readLine();
+
+                        if (response.startsWith("Pending Applicants:")) {
+                            String applicantsString = response.substring("Pending Applicants:".length()).trim();
+                            String[] applicants = applicantsString.split(",");
+
+                            if (applicants.length > 0) {
+                                System.out.println("Pending Applicants:");
+                                for (String applicant : applicants) {
+                                    System.out.println("-> " + applicant);
+                                    System.out.println("  ");
+                                }
+
+                                // Ask for confirmation
+                                System.out.println("Do you want to confirm or reject any applicant?");
+                                System.out.println("Enter 'confirm <username>' or 'reject <username>':");
+
+                                String confirmRejectInput = stdIn.readLine();
+                                out.println(confirmRejectInput); // Send confirmation/rejection command to server
+
+                                String confirmRejectResponse = in.readLine();
+                                System.out.println("Server response: " + confirmRejectResponse);
+                            } else {
+                                System.out.println("No pending applicants found.");
+                            }
+                        } else {
+                            System.out.println("Error fetching applicants: " + response);
+                        }
                     }
 
+                } else {
+                    System.out.println("Unknown Command");
+                    System.out.println(
+                            "Available commands: 'login / register / exit' ");
                 }
+
             }
 
         } catch (UnknownHostException e) {
