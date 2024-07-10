@@ -145,22 +145,55 @@ public class client {
                                     System.out.println("-> " + applicant);
                                     System.out.println("  ");
                                 }
-
-                                // Ask for confirmation
-                                System.out.println("Do you want to confirm or reject any applicant?");
-                                System.out.println("Enter 'confirm <username>' or 'reject <username>':");
-
-                                String confirmRejectInput = stdIn.readLine();
-                                out.println(confirmRejectInput); // Send confirmation/rejection command to server
-
-                                String confirmRejectResponse = in.readLine();
-                                System.out.println("Server response: " + confirmRejectResponse);
+                                System.out.println("Type confirm to proceed and CONFRIM or REJECT any applicant?");
                             } else {
                                 System.out.println("No pending applicants found.");
                             }
                         } else {
                             System.out.println("Error fetching applicants: " + response);
                         }
+                    } else if (userInput.equalsIgnoreCase("confirm")) {
+                        System.out.println("      ");
+                        System.out.println("Are you a confirming or rejecting");
+                        System.out.println(
+                                "Enter 'yes' to confirm or 'no' to reject: ");
+                        String confirmType = stdIn.readLine();
+
+                        if (confirmType.startsWith("yes")) {
+                            System.out.println("Enter student's username: ");
+                            String username = stdIn.readLine();
+
+                            out.println(userInput);
+                            out.println("yes");
+                            out.println(username);
+
+                            String response = in.readLine();
+                            if (response.startsWith("Confirmation successful for")) {
+                                System.out.println(response);
+                                System.out.println("      ");
+                                System.out.println("Continue to confirm or exit if done");
+                            } else {
+                                System.out.println(response);
+                                System.out.println("      ");
+                                System.out.println("Try again to confirm or exit");
+                            }
+
+                        } else if (confirmType.startsWith("no")) {
+                            System.out.println("Enter student's username: ");
+                            String username = stdIn.readLine();
+
+                            out.println(userInput);
+                            out.println("no");
+                            out.println(username);
+
+                            String response = in.readLine();
+                            System.out.println(response);
+                        } else {
+                            System.out.println("Invalid choice. Options are only yes / no");
+                        }
+
+                    } else {
+                        System.out.println("Invalid choice. Options are only viewApplicants, confirm, reject");
                     }
 
                 } else {

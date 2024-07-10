@@ -30,12 +30,16 @@ public class server {
             String query = "CREATE TABLE IF NOT EXISTS student(id INT PRIMARY KEY UNIQUE AUTO_INCREMENT, username VARCHAR(20), firstName VARCHAR(20), lastName VARCHAR(20), emailAddress VARCHAR(40), date_of_birth DATE, school_registration_number VARCHAR(55), image_file BLOB)";
             String query1 = "CREATE TABLE IF NOT EXISTS schools(id INT PRIMARY KEY UNIQUE AUTO_INCREMENT, school_name VARCHAR(55), district VARCHAR(20), school_registration_number VARCHAR(55), representative_name VARCHAR(20), representative_email VARCHAR(40))";
             String query2 = "CREATE TABLE IF NOT EXISTS applicants(id INT PRIMARY KEY UNIQUE AUTO_INCREMENT, username VARCHAR(20), firstName VARCHAR(20), lastName VARCHAR(20), emailAddress VARCHAR(40), date_of_birth DATE, school_registration_number VARCHAR(55), status VARCHAR(20))";
+            String query3 = "CREATE TABLE IF NOT EXISTS participants(id INT PRIMARY KEY UNIQUE AUTO_INCREMENT, username VARCHAR(20), school_registration_number VARCHAR(55), status VARCHAR(10))";
+            String query4 = "CREATE TABLE IF NOT EXISTS rejected(id INT PRIMARY KEY UNIQUE AUTO_INCREMENT, username VARCHAR(20), school_registration_number VARCHAR(55), status VARCHAR(10))";
 
             try {
                 Statement statement = connection.createStatement();
                 statement.execute(query);
                 statement.execute(query1);
                 statement.execute(query2);
+                statement.execute(query3);
+                statement.execute(query4);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -157,6 +161,49 @@ public class server {
                 e.printStackTrace();
                 System.out.println("Error inserting student details: " + e.getMessage());
                 return null;
+            }
+        }
+
+        public boolean confirmApplicant(String username, String representativeName) {
+            String insertParticipantSQL = "INSERT INTO participants (username, school_registration_number, status) SELECT username, school_registration_number, 'confirmed' FROM applicants WHERE username = ?";
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(insertParticipantSQL);
+                preparedStatement.setString(1, username);
+                int rowsInserted = preparedStatement.executeUpdate();
+
+                // Delete from applicants table
+                String deleteApplicantSQL = "DELETE FROM applicants WHERE username = ?";
+                PreparedStatement deleteStmt = connection.prepareStatement(deleteApplicantSQL);
+                deleteStmt.setString(1, username);
+                int rowsDeleted = deleteStmt.executeUpdate();
+
+                return rowsInserted > 0 && rowsDeleted > 0;
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        public boolean rejectApplicant(String username, String representativeName) {
+            String insertRejectedSQL = "INSERT INTO rejected (username, school_registration_number, status) SELECT username, school_registration_number, 'rejected' FROM applicants WHERE username = ?";
+            try {
+
+                // Insert into rejected table
+                PreparedStatement insertStmt = connection.prepareStatement(insertRejectedSQL);
+                insertStmt.setString(1, username);
+                int rowsInserted = insertStmt.executeUpdate();
+
+                // Delete from applicants table
+                String deleteApplicantSQL = "DELETE FROM applicants WHERE username = ?";
+                PreparedStatement deleteStmt = connection.prepareStatement(deleteApplicantSQL);
+                deleteStmt.setString(1, username);
+                int rowsDeleted = deleteStmt.executeUpdate();
+
+                return rowsInserted > 0 && rowsDeleted > 0;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
             }
         }
 
@@ -392,6 +439,32 @@ public class server {
                             System.out.println("Pending applicants sent to client: " + pendingApplicants);
                         } else {
                             out.println("No pending applicants found for your school.");
+                        }
+                    } else {
+                        out.println("Unauthorized access. Please login as a school representative.");
+                    }
+                } else if (inputLine.equalsIgnoreCase("confirm")) {
+                    if (myDbHelper.isRepresentative(currentUsername)) {
+                        String confirmType = in.readLine();
+
+                        if (confirmType.equals("yes")) {
+                            String username = in.readLine();
+                            boolean confirmResult = myDbHelper.confirmApplicant(username, currentUsername);
+                            if (confirmResult) {
+                                out.println("Confirmation successful for " + username);
+                            } else {
+                                out.println("Error confirming " + username);
+                            }
+                        } else if (confirmType.equalsIgnoreCase("no")) {
+                            String username = in.readLine();
+                            boolean rejectResult = myDbHelper.rejectApplicant(username, currentUsername);
+                            if (rejectResult) {
+                                out.println("Rejection successful for " + username);
+                            } else {
+                                out.println("Error rejecting " + username);
+                            }
+                        } else {
+                            out.println("Invalid confirmation type. Use 'yes' or 'no'.");
                         }
                     } else {
                         out.println("Unauthorized access. Please login as a school representative.");
