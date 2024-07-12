@@ -123,17 +123,4 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    /** register service providers for laravel excel manually*/
-    'providers' => [
-    Maatwebsite\Excel\ExcelServiceProvider::class,
-    ],
-
-    'aliases' => [
-
-        'Files' => App\Services\FilesService::class, 
-    'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-    ],
-
-
-
 ];
