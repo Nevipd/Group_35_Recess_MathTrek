@@ -32,8 +32,7 @@ This repository contains the implementation of a Math Challenge System, consisti
 ## Web Interface (Laravel, PHP)
 
 ### Tasks:
-- Develop a web interface for administrators to upload schools, questions, and answers.
-- Design a good logo for the system.
-- Implement analytics and reporting features.
-- Create a dashboard for school representatives and administrators.
+- Have a web interface for administrators to upload schools, questions, and answers.
+- Have analytics and reporting features.
+- Have a dashboard for school representatives and administrators.
 - Provide email notifications.
