@@ -21,7 +21,9 @@ public class client {
                         new InputStreamReader(mySocket.getInputStream()));
                 BufferedReader stdIn = new BufferedReader(
                         new InputStreamReader(System.in))) {
-            System.out.println("Enter command 'Register / Login / Exit to Close' ");
+            System.out.println("  ");
+            System.out.println("Enter any of the commands to continue \n-->Register \n-->Login \n-->Exit to Close ");
+            System.out.println("   ");
             String userInput;
             boolean isAuthenticated = false;
 
@@ -68,9 +70,9 @@ public class client {
 
                     } else if (userInput.equalsIgnoreCase("login")) {
 
-                        System.out.println("Are you a Student or School Representative?");
+                        System.out.println("Are you a Student or School Representative?\n");
                         System.out.println(
-                                "Enter 'student' for Student or 'representative' for School Representative: ");
+                                "-->student (if you are a student) \n-->representative (if you are a school representative):\n ");
                         String loginType = stdIn.readLine();
 
                         // Student login
@@ -112,23 +114,30 @@ public class client {
                             System.out.println("        ");
 
                             if (loginType.equalsIgnoreCase("Student")) {
-                                System.out.println("######################################################");
-                                System.out.println("Welcome to the School Students' System ");
+                                System.out.println("\n######################################################\n");
+                                System.out.println("WELCOME TO THE SCHOOL STUDENTS SYSTEM ");
                                 System.out.println("          ");
-                                System.out.println("Input a command of your choice like 'viewChallenges'");
+                                System.out.println(
+                                        "Menu of current commands to procced \n-->viewChallenges \n-->Exit \n");
 
                             } else if (loginType.equalsIgnoreCase("representative")) {
-                                System.out.println("######################################################");
-                                System.out.println("Welcome to the School Representatives' System ");
+                                System.out.println("\n######################################################\n");
+                                System.out.println("WELCOME TO THE SCHOOL REPRESENTATIVES SYSTEM ");
                                 System.out.println("          ");
-                                System.out.println("Input a command of your choice like 'viewApplicants'");
+                                System.out.println(
+                                        "Menu of current commands to procced \n-->viewApplicants \n-->Exit \n");
                             }
                             isAuthenticated = true;
                         } else if (response.equals("Invalid Username or School Registration Number. Login Failed")) {
                             System.out.println("Invalid Username or School Registration Number. Login Failed");
                         } else {
-                            System.out.println("Login Failed, Try Again");
+                            System.out.println(
+                                    "Login Failed \nMenu of commands to try again \n-->Login \n-->Register \n-->Exit");
                         }
+                    } else {
+                        System.out.println("Unknown Command\n");
+                        System.out.println(
+                                "The available menu commands are \n-->login \n-->register \n-->exit' ");
                     }
                 } else if (isAuthenticated) {
                     if (userInput.equalsIgnoreCase("viewApplicants")) {
@@ -140,23 +149,34 @@ public class client {
                             String[] applicants = applicantsString.split(",");
 
                             if (applicants.length > 0) {
-                                System.out.println("Pending Applicants:");
-                                for (String applicant : applicants) {
-                                    System.out.println("-> " + applicant);
-                                    System.out.println("  ");
+                                System.out.println(
+                                        "\nBelow are your current pending applicants' details of your school :\n");
+                                System.out.println(
+                                        "+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------------------+-----------------+");
+                                System.out.println(
+                                        "| Username        | First Name      | Last Name       | Email Address   | Date of Birth   | School Registration Number  | Status          |");
+                                System.out.println(
+                                        "+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------------------+-----------------+");
+                                for (String applicantDetails : applicants) {
+                                    String[] details = applicantDetails.split("\\|");
+                                    System.out.printf("| %-15s | %-15s | %-15s | %-15s | %-15s | %-27s | %-15s |\n",
+                                            details[0], details[1], details[2], details[3], details[4], details[5],
+                                            details[6]);
                                 }
-                                System.out.println("Type confirm to proceed and CONFRIM or REJECT any applicant?");
+                                System.out.println(
+                                        "+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------------------+-----------------+\n");
+                                System.out.println("Menu of commands to proceed \n-->Confirm \n-->Exit");
                             } else {
-                                System.out.println("No pending applicants found.");
+                                System.out.println("No pending applicants found.\n");
                             }
                         } else {
                             System.out.println("Error fetching applicants: " + response);
                         }
                     } else if (userInput.equalsIgnoreCase("confirm")) {
                         System.out.println("      ");
-                        System.out.println("Are you a confirming or rejecting");
+                        System.out.println("Menu of current commands to proceed with applicants\n");
                         System.out.println(
-                                "Enter 'yes' to confirm or 'no' to reject: ");
+                                "--->yes (to confirm) \n--->no (to reject) \n-->exit(to exit): \n");
                         String confirmType = stdIn.readLine();
 
                         if (confirmType.startsWith("yes")) {
@@ -171,11 +191,15 @@ public class client {
                             if (response.startsWith("Confirmation successful for")) {
                                 System.out.println(response);
                                 System.out.println("      ");
-                                System.out.println("Continue to confirm or exit if done");
+                                System.out.println("Menu of commands to proceed \n-->Confirm \n-->Exit if done\n");
                             } else {
                                 System.out.println(response);
                                 System.out.println("      ");
-                                System.out.println("Try again to confirm or exit");
+                                System.out.println("FAILED : TRY AGAIN again\n");
+                                System.out.println("Menu of commands to proceed \\n" + //
+                                        "-->Confirm \\n" + //
+                                        "-->Exit if done\\n" + //
+                                        "");
                             }
 
                         } else if (confirmType.startsWith("no")) {
@@ -187,19 +211,54 @@ public class client {
                             out.println(username);
 
                             String response = in.readLine();
-                            System.out.println(response);
+
+                            if (response.startsWith("You have rejected")) {
+                                System.out.println(response);
+                                System.out.println("      ");
+                                System.out.println("Menu of commands to proceed \n-->Confirm \n-->Exit if done\n");
+                            } else {
+                                System.out.println(response);
+                                System.out.println("      ");
+                                System.out.println("FAILED : TRY AGAIN again\n");
+                                System.out.println("Menu of commands to proceed \n-->Confirm \n-->Exit if done\\n");
+                            }
+
                         } else {
-                            System.out.println("Invalid choice. Options are only yes / no");
+                            System.out.println("\nInvalid choice. \nMenu options are only \n-->yes \n-->no");
                         }
 
+                    } else if (userInput.equalsIgnoreCase("viewChallenges")) {
+                        out.println(userInput);
+                        String response = in.readLine();
+
+                        if (response.startsWith("You are currently pending")) {
+                            System.out.println(response);
+                            System.out.println("      ");
+                            System.out.println("Menu of commands to proceed \n-->viewChallenges \n-->Exit if done");
+                        } else if (response.startsWith("You are currently confirmed")) {
+                            System.out.println(response);
+                            System.out.println("      ");
+                            System.out.println("Menu of commands to proceed \n-->attemptChallenges \n-->Exit");
+                        } else if (response.startsWith("You are currently rejected")) {
+                            System.out.println(response);
+                            System.out.println("      ");
+                            System.out.println("Menu of commands to proceed \n-->Exit");
+                            break;
+                        } else {
+                            System.out.println(response);
+                            System.out.println("      ");
+                            System.err.println("FAILED TRY AGAIN");
+                            break;
+                        }
                     } else {
-                        System.out.println("Invalid choice. Options are only viewApplicants, confirm, reject");
+                        System.out.println(
+                                "\nInvalid choice. \nMenu options are only \n-->viewApplicants \n-->confirm \n-->exit");
                     }
 
                 } else {
-                    System.out.println("Unknown Command");
+                    System.out.println("\nYou are not authenticated to access this command\n");
                     System.out.println(
-                            "Available commands: 'login / register / exit' ");
+                            "The available menu commands are \n-->login \n-->register \n-->exit' ");
                 }
 
             }
