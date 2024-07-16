@@ -223,58 +223,6 @@ public class server {
         // return null;
         // }
 
-        public boolean isRepresentative(String username) {
-            String query = "SELECT COUNT(*) AS count FROM schools WHERE representative_name = ?";
-            try {
-                PreparedStatement preparedStatement = connection.prepareStatement(query);
-                preparedStatement.setString(1, username);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                if (resultSet.next()) {
-                    int count = resultSet.getInt("count");
-                    return count > 0;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                System.out.println("Error checking representative status: " + e.getMessage());
-            }
-            return false;
-        }
-
-        public String getSchoolRegistrationNumber(String representativeName) {
-            String query = "SELECT school_registration_number FROM schools WHERE representative_name = ?";
-            try {
-                PreparedStatement preparedStatement = connection.prepareStatement(query);
-                preparedStatement.setString(1, representativeName);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                if (resultSet.next()) {
-                    return resultSet.getString("school_registration_number");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                System.out.println("Error retrieving school registration number: " + e.getMessage());
-            }
-            return null;
-        }
-
-        public List<String> getPendingApplicants(String schoolRegistrationNumber) {
-            List<String> pendingApplicants = new ArrayList<>();
-            String query = "SELECT username FROM applicants WHERE status = 'pending' AND school_registration_number = ?";
-            try {
-                PreparedStatement preparedStatement = connection.prepareStatement(query);
-                preparedStatement.setString(1, schoolRegistrationNumber);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
-                    String username = resultSet.getString("username");
-                    pendingApplicants.add(username);
-                }
-                return pendingApplicants;
-            } catch (SQLException e) {
-                e.printStackTrace();
-                System.out.println("Error retrieving pending applicants: " + e.getMessage());
-            }
-            return null;
-        }
-
         // private void sendEmail(String to, String username, String firstName, String
         // lastName, String emailAddress,
         // String date_of_birth, String school_registration_number) {
@@ -314,6 +262,116 @@ public class server {
         // throw new RuntimeException(e);
         // }
         // }
+
+        public boolean isRepresentative(String username) {
+            String query = "SELECT COUNT(*) AS count FROM schools WHERE representative_name = ?";
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, username);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    int count = resultSet.getInt("count");
+                    return count > 0;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("Error checking representative status: " + e.getMessage());
+            }
+            return false;
+        }
+
+        public boolean isStudent(String username) {
+            String query = "SELECT COUNT(*) AS count FROM student WHERE username = ?";
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, username);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    int count = resultSet.getInt("count");
+                    return count > 0;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("Error checking student status: " + e.getMessage());
+            }
+            return false;
+        }
+
+        public String getSchoolRegistrationNumber(String representativeName) {
+            String query = "SELECT school_registration_number FROM schools WHERE representative_name = ?";
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, representativeName);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    return resultSet.getString("school_registration_number");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("Error retrieving school registration number: " + e.getMessage());
+            }
+            return null;
+        }
+
+        public List<String[]> getPendingApplicants(String schoolRegistrationNumber) {
+            List<String[]> pendingApplicants = new ArrayList<>();
+            String query = "SELECT username, firstName, lastName, emailAddress, date_of_birth, school_registration_number, status FROM applicants WHERE status = 'pending' AND school_registration_number = ?";
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, schoolRegistrationNumber);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    String username = resultSet.getString("username");
+                    String firstName = resultSet.getString("firstName");
+                    String lastName = resultSet.getString("lastName");
+                    String emailAddress = resultSet.getString("emailAddress");
+                    String dateOfBirth = resultSet.getString("date_of_birth");
+                    String school_registration_number = resultSet.getString("school_registration_number");
+                    String status = resultSet.getString("status");
+                    pendingApplicants.add(new String[] { username, firstName, lastName, emailAddress, dateOfBirth,
+                            school_registration_number, status });
+                }
+                return pendingApplicants;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("Error retrieving pending applicants: " + e.getMessage());
+            }
+            return null;
+        }
+
+        public String getStudentStatus(String username) {
+            String statusQuery = "SELECT 'participants' AS source, status FROM participants WHERE username = ? " +
+                    "UNION " +
+                    "SELECT 'applicants' AS source, status FROM applicants WHERE username = ? " +
+                    "UNION " +
+                    "SELECT 'rejected' AS source, status FROM rejected WHERE username = ?";
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(statusQuery);
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, username);
+                preparedStatement.setString(3, username);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    String source = resultSet.getString("source");
+                    String status = resultSet.getString("status");
+
+                    if (source.equals("participants")) {
+                        return "confirmed";
+                    } else if (source.equals("applicants")) {
+                        return "pending";
+                    } else if (source.equals("rejected")) {
+                        return "rejected";
+                    }
+                } else {
+                    return "not found";
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("Error retrieving student status: " + e.getMessage());
+                return "error";
+            }
+            return "not found";
+        }
 
     }
 
@@ -392,8 +450,6 @@ public class server {
                             System.out.println("Student login successful");
                             currentUsername = username;
 
-                            // Providing student-specific commands
-                            out.println("Available commands: viewChallenges");
                         } else {
                             out.println("Invalid username or school registration number. Login Failed");
                             System.out.println("Invalid username or school registration number. Login Failed");
@@ -423,21 +479,22 @@ public class server {
                 } else if (inputLine.equalsIgnoreCase("viewApplicants")) {
                     System.out.println(inputLine);
                     if (myDbHelper.isRepresentative(currentUsername)) {
-                        System.out.println(currentUsername);
+                        System.out.println("Current username: " + currentUsername);
+
                         // We retrieve applicants whose status is 'pending' and school registration
                         // number matches
                         String schoolRegistrationNumber = myDbHelper.getSchoolRegistrationNumber(currentUsername);
-                        List<String> pendingApplicants = myDbHelper.getPendingApplicants(schoolRegistrationNumber);
-
-                        // We print our currentUsername and also print applicants which I use for
-                        // debugging
-                        System.out.println("Current username: " + currentUsername);
-                        System.out.println("Pending applicants: " + pendingApplicants);
+                        List<String[]> pendingApplicants = myDbHelper.getPendingApplicants(schoolRegistrationNumber);
 
                         // We then send the list of pending applicants to the client
                         if (pendingApplicants != null && !pendingApplicants.isEmpty()) {
-                            out.println("Pending Applicants: " + String.join(",", pendingApplicants));
-                            System.out.println("Pending applicants sent to client: " + pendingApplicants);
+                            StringBuilder responseBuilder = new StringBuilder("Pending Applicants:");
+                            for (String[] applicant : pendingApplicants) {
+                                responseBuilder.append(String.join("|", applicant)).append(",");
+                            }
+                            out.println(responseBuilder.toString());
+                            System.out.println("Pending applicants sent to client: " + responseBuilder.toString());
+
                         } else {
                             out.println("No pending applicants found for your school.");
                         }
@@ -460,7 +517,7 @@ public class server {
                             String username = in.readLine();
                             boolean rejectResult = myDbHelper.rejectApplicant(username, currentUsername);
                             if (rejectResult) {
-                                out.println("Rejection successful for " + username);
+                                out.println("You have rejected " + username + "in your school");
                             } else {
                                 out.println("Error rejecting " + username);
                             }
@@ -469,6 +526,27 @@ public class server {
                         }
                     } else {
                         out.println("Unauthorized access. Please login as a school representative.");
+                    }
+                } else if (inputLine.equalsIgnoreCase("viewChallenges")) {
+                    if (myDbHelper.isStudent(currentUsername)) {
+                        System.out.println("Current student: " + currentUsername);
+
+                        // Get the status of the student
+                        String studentStatus = myDbHelper.getStudentStatus(currentUsername);
+                        System.out.println("The student status: " + studentStatus);
+                        if (studentStatus.equals("pending")) {
+                            System.out.println("Current student: " + currentUsername + " is pending\n");
+                            out.println(
+                                    "You are currently pending. Please wait for the school to confirm your application.");
+                        } else if (studentStatus.equals("confirmed")) {
+                            System.out.println("Current student: " + currentUsername + " is confirmed\n");
+                            out.println("You are currently confirmed. You can now view the challenges.");
+                        } else {
+                            System.out.println("Current student: " + currentUsername + " is rejected\n");
+                            out.println("You are currently rejected. You cannot view the challenges.");
+                        }
+                    } else {
+                        out.println("Unauthorized access. Please login as a student.");
                     }
                 } else {
                     out.println("Echo: " + inputLine);
