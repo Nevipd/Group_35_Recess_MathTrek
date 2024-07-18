@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
-            /** table values */
+            /** table values custom to the system */
             $table->text('question_text');
             $table->string('choice1');
             $table->string('choice2');

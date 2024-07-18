@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('challenges', function (Blueprint $table) {
             $table->id();
-            /**table values */
+            /**table values custom to the system */
             $table->string('name');
             $table->text('description');
             $table->date('start_date');

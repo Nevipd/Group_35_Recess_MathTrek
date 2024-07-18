@@ -7,53 +7,61 @@ use Illuminate\Http\Request;
 
 class ChallengeController extends Controller
 {
-    // Display a listing of the challenges
+    // to display a listing of the challenges
     public function index()
     {
         $challenges = Challenge::all();
         return view('challenges.index', compact('challenges'));
     }
 
-    // Show the form for creating a new challenge
+    // to show the form for creating a new challenge
     public function create()
     {
         return view('challenges.create');
     }
 
-    // Store a newly created challenge in the database
+    // to store a newly created challenge in the database
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
-        Challenge::create($request->all());
+        // Extract only the necessary fields to prevent mass assignment vulnerabilities
+        $data = $request->only(['name', 'description', 'start_date', 'end_date']);
+        Challenge::create($data);
 
         return redirect()->route('challenges.index')->with('success', 'Challenge created successfully.');
     }
 
-    // Display the specified challenge
+    // to display the specified challenge
     public function show(Challenge $challenge)
     {
         return view('challenges.show', compact('challenge'));
     }
 
-    // Show the form for editing the specified challenge
+    // to show the form for editing the specified challenge
     public function edit(Challenge $challenge)
     {
         return view('challenges.edit', compact('challenge'));
     }
 
-    // Update the specified challenge in the database
+    // to update the specified challenge in the database
     public function update(Request $request, Challenge $challenge)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
-        $challenge->update($request->all());
+        // to etract only the necessary fields to prevent mass assignment vulnerabilities
+        $data = $request->only(['name', 'description', 'start_date', 'end_date']);
+        $challenge->update($data);
 
         return redirect()->route('challenges.index')->with('success', 'Challenge updated successfully.');
     }
