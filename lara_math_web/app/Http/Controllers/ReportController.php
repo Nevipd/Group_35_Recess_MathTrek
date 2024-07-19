@@ -7,20 +7,20 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    // Display a listing of the reports
+    // to display a listing of the reports
     public function index()
     {
         $reports = Report::all();
         return view('reports.index', compact('reports'));
     }
 
-    // Show the form for creating a new report
+    // to show the form for creating a new report
     public function create()
     {
         return view('reports.create');
     }
 
-    // Store a newly created report in the database
+    // to store a newly created report in the database
     public function store(Request $request)
     {
         $request->validate([
@@ -33,19 +33,19 @@ class ReportController extends Controller
         return redirect()->route('reports.index')->with('success', 'Report created successfully.');
     }
 
-    // Display the specified report
+    // to display the specified report
     public function show(Report $report)
     {
         return view('reports.show', compact('report'));
     }
 
-    // Show the form for editing the specified report
+    // to show the form for editing the specified report
     public function edit(Report $report)
     {
         return view('reports.edit', compact('report'));
     }
 
-    // Update the specified report in the database
+    // to update the specified report in the database
     public function update(Request $request, Report $report)
     {
         $request->validate([
@@ -58,7 +58,7 @@ class ReportController extends Controller
         return redirect()->route('reports.index')->with('success', 'Report updated successfully.');
     }
 
-    // Remove the specified report from the database
+    // to remove the specified report from the database
     public function destroy(Report $report)
     {
         $report->delete();

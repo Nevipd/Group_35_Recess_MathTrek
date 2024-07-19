@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('answers', function (Blueprint $table) {
             $table->id();
-            /**table values */
+            /**table values custom to the system */
             $table->unsignedBigInteger('question_id');
             $table->text('answer_text');
             $table->integer('marks');

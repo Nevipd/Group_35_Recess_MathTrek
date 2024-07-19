@@ -97,9 +97,11 @@
                 @auth
                     <a href="{{ url('/dashboard') }}" class="button">Dashboard</a>
                 @else
-                    <a href="{{ route('login') }}" class="button">Log in</a>
+                    <a href="{{ route('login') }}" class="button">Admin Log in</a>
+                    <!-- <a href="{{ route('school.login') }}" class="button">School Rep Login</a> -->
                     @if (Route::has('register'))
                         <a href="{{ route('register') }}" class="button">Register</a>
+                        <!-- <a href="{{ route('school.register') }}" class="button">School Rep Register</a> -->
                     @endif
                 @endauth
             </div>
@@ -109,18 +111,16 @@
         <h1 class="title">Welcome to MathTrek </h1>
         <p class="subtitle">Bringing innovation and excellence to education</p>
         <div class="cards">
-            <div class="card">
-                <!-- <h2>Ad Image 1</h2> -->
-                <img src="/images/bg2.png" alt="Ad Image 1">
-            </div>
+            <!-- <div class="card">
+                <img src="/images/logoMath.jpeg" alt="Ad Image 1">
+            </div> -->
             <div class="card">
                 <!-- <h2>Ad Image 2</h2> -->
-                <img src="/images/bg5.png" alt="Ad Image 2">
+                <img src="/images/logoMath.jpeg" alt="Ad Image 2">
             </div>
-            <div class="card">
-                <!-- <h2>Ad Image 3</h2> -->
-                <img src="/images/bg2.png" alt="Ad Image 3">
-            </div>
+            <!-- <div class="card">
+                <img src="/images/logoMath.jpeg" alt="Ad Image 3">
+            </div> -->
         </div>
     </div>
     <footer class="footer">

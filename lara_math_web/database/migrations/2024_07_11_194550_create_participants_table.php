@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('participants', function (Blueprint $table) {
             $table->id();
-            /** table values */
+            /**table values custom to the system */
             $table->string('username')->unique();
             $table->string('first_name');
             $table->string('last_name');

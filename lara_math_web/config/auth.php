@@ -40,6 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        // // configuring the school rep guard 
+        // 'school' => [
+        //     'driver' => 'session',
+        //     'provider' => 'school_representatives',
+        // ],
     ],
 
     /*
@@ -64,6 +69,11 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
+
+        // 'school_representatives' => [
+        //     'driver' => 'eloquent',
+        //     'model' => App\Models\SchoolRepresentative::class,
+        // ],
 
         // 'users' => [
         //     'driver' => 'database',
@@ -94,6 +104,13 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+    'school_representatives' => [
+            'provider' => 'school_representatives',
+            'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,
         ],
