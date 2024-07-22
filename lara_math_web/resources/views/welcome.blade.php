@@ -98,10 +98,10 @@
                     <a href="{{ url('/dashboard') }}" class="button">Dashboard</a>
                 @else
                     <a href="{{ route('login') }}" class="button">Admin Log in</a>
-                    <!-- <a href="{{ route('school.login') }}" class="button">School Rep Login</a> -->
+                  
                     @if (Route::has('register'))
                         <a href="{{ route('register') }}" class="button">Register</a>
-                        <!-- <a href="{{ route('school.register') }}" class="button">School Rep Register</a> -->
+                    
                     @endif
                 @endauth
             </div>
