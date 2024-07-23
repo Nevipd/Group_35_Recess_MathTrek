@@ -24,11 +24,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
+    Route::get('/questions/import', [QuestionController::class, 'importForm'])->name('questions.importForm');
+    Route::post('/questions/import', [QuestionController::class, 'import'])->name('questions.import');
+
     Route::resource('schools', SchoolController::class);
     Route::resource('questions', QuestionController::class);
     Route::resource('challenges', ChallengeController::class);
     Route::resource('reports', ReportController::class);
     Route::resource('participants', ParticipantController::class);
+    
 });
 
 require __DIR__.'/auth.php';

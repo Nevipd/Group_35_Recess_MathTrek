@@ -11,4 +11,8 @@ class Question extends Model
     /** here i specified the fields  */
     protected $fillable = ['question_text', 'choice1', 'choice2', 'choice3', 'choice4', 'correct_choice'];
     /** */
+    public function challenges()
+    {
+        return $this->belongsToMany(Challenge::class);
+    }
 }

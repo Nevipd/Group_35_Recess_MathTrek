@@ -18,6 +18,9 @@ return new class extends Migration
             $table->text('description');
             $table->date('start_date');
             $table->date('end_date');
+            $table->integer('num_questions');
+            $table->integer('duration'); // duration of the entire challenge in minutes
+            $table->integer('time_per_question'); // time per question in seconds
             $table->timestamps();
         });
     }
