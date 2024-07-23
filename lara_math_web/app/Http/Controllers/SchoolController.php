@@ -12,6 +12,7 @@ class SchoolController extends Controller
     {
         $schools = School::all();
         return view('schools.index', compact('schools'));
+        
     }
 
     // to show the form for creating a new school
