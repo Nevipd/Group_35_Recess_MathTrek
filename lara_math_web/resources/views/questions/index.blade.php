@@ -3,6 +3,8 @@
 @section('content')
     <h1 class="text-2xl font-bold mb-6">Questions</h1>
     <a href="{{ route('questions.create') }}" class="btn btn-primary mb-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md">Add New Question</a>
+    <!-- link to imports -->
+    <a href="{{ route('questions.importForm') }}" class="btn btn-secondary mb-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md">Import Questions</a>
     <table class="table-auto w-full bg-white shadow-md rounded-lg">
         <thead>
             <tr class="bg-gray-200 text-gray-700">

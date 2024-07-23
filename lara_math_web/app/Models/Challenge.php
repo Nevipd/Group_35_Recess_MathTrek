@@ -14,5 +14,12 @@ class Challenge extends Model
         'description',
         'start_date',
         'end_date',
+        'num_questions',
+        'duration',
+        'time_per_question',
     ];
+    public function questions()
+    {
+        return $this->belongsToMany(Question::class);
+    }
 }
