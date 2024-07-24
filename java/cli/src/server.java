@@ -6,13 +6,15 @@ import java.io.*;
 import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 // import java.util.Properties;
 // import javax.mail.*;
 // import javax.mail.internet.*;
 
 public class server {
-    public static final String DB_URL = "jdbc:mysql://localhost:3306/math_trek";
+    public static final String DB_URL = "jdbc:mysql://localhost:3306/lara_math_web";
     public static final String DB_USER = "root";
     public static final String DB_PASSWORD = "";
     public static Connection connection = null;
@@ -373,6 +375,28 @@ public class server {
             return "not found";
         }
 
+        public List<Map<String, String>> getChallenges() {
+            List<Map<String, String>> challenges = new ArrayList<>();
+            String query = "SELECT name, description, start_date, end_date, num_questions FROM challenges";
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    Map<String, String> challenge = new HashMap<>();
+                    challenge.put("name", resultSet.getString("name"));
+                    challenge.put("description", resultSet.getString("description"));
+                    challenge.put("start_date", resultSet.getString("start_date"));
+                    challenge.put("end_date", resultSet.getString("end_date"));
+                    challenge.put("num_questions", resultSet.getString("num_questions"));
+                    challenges.add(challenge);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("Error retrieving challenges: " + e.getMessage());
+            }
+            return challenges;
+        }
+
     }
 
     // END OF DATABASE METHODS
@@ -540,7 +564,31 @@ public class server {
                                     "You are currently pending. Please wait for the school to confirm your application.");
                         } else if (studentStatus.equals("confirmed")) {
                             System.out.println("Current student: " + currentUsername + " is confirmed\n");
-                            out.println("You are currently confirmed. You can now view the challenges.");
+                            // out.println("You are currently confirmed. You can now view the challenges.");
+
+                            // Fetch challenges
+                            List<Map<String, String>> challenges = myDbHelper.getChallenges();
+                            if (!challenges.isEmpty()) {
+                                StringBuilder challengesResponse = new StringBuilder("Challenges:");
+                                for (Map<String, String> challenge : challenges) {
+                                    challengesResponse.append(String.join("|",
+                                            challenge.get("name"),
+                                            challenge.get("description"),
+                                            challenge.get("start_date"),
+                                            challenge.get("end_date"),
+                                            challenge.get("num_questions")))
+                                            .append(",");
+                                }
+                                // Remove the last comma
+                                if (challengesResponse.length() > 0) {
+                                    challengesResponse.setLength(challengesResponse.length() - 1);
+                                }
+                                out.println(challengesResponse.toString());
+                                System.out.println("Challenges sent to client: " + challengesResponse.toString());
+                            } else {
+                                out.println("No challenges available.");
+                            }
+
                         } else {
                             System.out.println("Current student: " + currentUsername + " is rejected\n");
                             out.println("You are currently rejected. You cannot view the challenges.");
