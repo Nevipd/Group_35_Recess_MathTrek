@@ -4,10 +4,7 @@
 import java.net.*;
 import java.io.*;
 import java.sql.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 // import java.util.Properties;
 // import javax.mail.*;
@@ -34,6 +31,7 @@ public class server {
             String query2 = "CREATE TABLE IF NOT EXISTS applicants(id INT PRIMARY KEY UNIQUE AUTO_INCREMENT, username VARCHAR(20), firstName VARCHAR(20), lastName VARCHAR(20), emailAddress VARCHAR(40), date_of_birth DATE, school_registration_number VARCHAR(55), status VARCHAR(20))";
             String query3 = "CREATE TABLE IF NOT EXISTS participants(id INT PRIMARY KEY UNIQUE AUTO_INCREMENT, username VARCHAR(20), school_registration_number VARCHAR(55), status VARCHAR(10))";
             String query4 = "CREATE TABLE IF NOT EXISTS rejected(id INT PRIMARY KEY UNIQUE AUTO_INCREMENT, username VARCHAR(20), school_registration_number VARCHAR(55), status VARCHAR(10))";
+            String query5 = "CREATE TABLE IF NOT EXISTS attempted_challenges (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(255) NOT NULL, school_reg_no VARCHAR(255) NOT NULL, challenge_name VARCHAR(255) NOT NULL, total_questions INT NOT NULL, correct_answers INT NOT NULL, wrong_answers INT NOT NULL, skipped_questions INT NOT NULL, challenge_marks INT NOT NULL, total_score INT NOT NULL, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
 
             try {
                 Statement statement = connection.createStatement();
@@ -42,6 +40,7 @@ public class server {
                 statement.execute(query2);
                 statement.execute(query3);
                 statement.execute(query4);
+                statement.execute(query5);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -375,26 +374,122 @@ public class server {
             return "not found";
         }
 
-        public List<Map<String, String>> getChallenges() {
-            List<Map<String, String>> challenges = new ArrayList<>();
+        public List<String[]> getChallenges() {
+            List<String[]> challenges = new ArrayList<>();
             String query = "SELECT name, description, start_date, end_date, num_questions FROM challenges";
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 while (resultSet.next()) {
-                    Map<String, String> challenge = new HashMap<>();
-                    challenge.put("name", resultSet.getString("name"));
-                    challenge.put("description", resultSet.getString("description"));
-                    challenge.put("start_date", resultSet.getString("start_date"));
-                    challenge.put("end_date", resultSet.getString("end_date"));
-                    challenge.put("num_questions", resultSet.getString("num_questions"));
-                    challenges.add(challenge);
+                    String name = resultSet.getString("name");
+                    String description = resultSet.getString("description");
+                    String startDate = resultSet.getString("start_date");
+                    String endDate = resultSet.getString("end_date");
+                    String numQuestions = resultSet.getString("num_questions");
+                    challenges.add(new String[] { name, description, startDate, endDate, numQuestions });
+                }
+                return challenges;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("Error retrieving challenges: " + e.getMessage());
+            }
+            return null;
+        }
+
+        // Method to fetch challenges that are not expired
+        public List<String[]> getActiveChallenges() {
+            List<String[]> challenges = new ArrayList<>();
+            String query = "SELECT name, description, start_date, end_date, num_questions FROM challenges WHERE end_date >= CURDATE()";
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    String name = resultSet.getString("name");
+                    String description = resultSet.getString("description");
+                    String startDate = resultSet.getString("start_date");
+                    String endDate = resultSet.getString("end_date");
+                    String numQuestions = resultSet.getString("num_questions");
+                    challenges.add(new String[] { name, description, startDate, endDate, numQuestions });
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
                 System.out.println("Error retrieving challenges: " + e.getMessage());
             }
             return challenges;
+        }
+
+        // Method to fetch questions for a specific challenge
+        public List<String[]> getQuestionsForChallenge(String challengeName) {
+            List<String[]> questions = new ArrayList<>();
+            String query = "SELECT question_text, choice1, choice2, choice3, choice4, correct_choice " +
+                    "FROM questions WHERE LOWER(file_name) = LOWER(?)";
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, challengeName);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    String question = resultSet.getString("question_text");
+                    String choice1 = resultSet.getString("choice1");
+                    String choice2 = resultSet.getString("choice2");
+                    String choice3 = resultSet.getString("choice3");
+                    String choice4 = resultSet.getString("choice4");
+                    String correctAnswer = resultSet.getString("correct_choice");
+                    questions.add(new String[] { question, choice1, choice2, choice3, choice4, correctAnswer });
+                    // System.out.println("Fetched question: " + question); // Debugging line of
+                    // code
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("Error retrieving questions: " + e.getMessage());
+            }
+            return questions;
+        }
+
+        // Method to save challenge details in the database
+        public void saveAttemptedChallenges(String username, String schoolRegNo, String challengeName,
+                int totalQuestions, int correctAnswers,
+                int wrongAnswers, int skippedQuestions,
+                int challengeMarks, int challengeScore) {
+            String query = "INSERT INTO attempted_challenges (username, school_reg_no, challenge_name, total_questions, correct_answers, wrong_answers, skipped_questions, "
+                    +
+                    "challenge_marks, total_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, schoolRegNo);
+                preparedStatement.setString(3, challengeName);
+                preparedStatement.setInt(4, totalQuestions);
+                preparedStatement.setInt(5, correctAnswers);
+                preparedStatement.setInt(6, wrongAnswers);
+                preparedStatement.setInt(7, skippedQuestions);
+                preparedStatement.setInt(8, challengeMarks);
+                preparedStatement.setInt(9, challengeScore);
+
+                int rowsInserted = preparedStatement.executeUpdate();
+                if (rowsInserted > 0) {
+                    System.out.println("Challenge details saved successfully!");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Method to get registration number by username
+        public String getRegNoByUsername(String username) {
+            String query = "SELECT school_registration_number FROM student WHERE username = ?";
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, username);
+                ResultSet rs = preparedStatement.executeQuery();
+
+                if (rs.next()) {
+                    return rs.getString("school_registration_number");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
 
     }
@@ -494,7 +589,8 @@ public class server {
                         } else {
                             out.println("Invalid representative name or school registration number. Login Failed");
                             System.out
-                                    .println("Invalid representative name or school registration number. Login Failed");
+                                    .println(
+                                            "Invalid representative name or school registration number. Login Failed");
                         }
                     } else {
                         out.println("Invalid user type selected. Please try again.");
@@ -508,7 +604,8 @@ public class server {
                         // We retrieve applicants whose status is 'pending' and school registration
                         // number matches
                         String schoolRegistrationNumber = myDbHelper.getSchoolRegistrationNumber(currentUsername);
-                        List<String[]> pendingApplicants = myDbHelper.getPendingApplicants(schoolRegistrationNumber);
+                        List<String[]> pendingApplicants = myDbHelper
+                                .getPendingApplicants(schoolRegistrationNumber);
 
                         // We then send the list of pending applicants to the client
                         if (pendingApplicants != null && !pendingApplicants.isEmpty()) {
@@ -564,24 +661,18 @@ public class server {
                                     "You are currently pending. Please wait for the school to confirm your application.");
                         } else if (studentStatus.equals("confirmed")) {
                             System.out.println("Current student: " + currentUsername + " is confirmed\n");
-                            // out.println("You are currently confirmed. You can now view the challenges.");
 
                             // Fetch challenges
-                            List<Map<String, String>> challenges = myDbHelper.getChallenges();
-                            if (!challenges.isEmpty()) {
-                                StringBuilder challengesResponse = new StringBuilder("Challenges:");
-                                for (Map<String, String> challenge : challenges) {
-                                    challengesResponse.append(String.join("|",
-                                            challenge.get("name"),
-                                            challenge.get("description"),
-                                            challenge.get("start_date"),
-                                            challenge.get("end_date"),
-                                            challenge.get("num_questions")))
-                                            .append(",");
+                            List<String[]> challenges = myDbHelper.getChallenges();
+                            if (challenges != null && !challenges.isEmpty()) {
+                                StringBuilder challengesResponse = new StringBuilder("confirmed:");
+                                for (String[] challenge : challenges) {
+                                    String challengeDetails = String.join("|", challenge);
+                                    challengesResponse.append(challengeDetails).append(";;");
                                 }
-                                // Remove the last comma
+                                // Remove the last separator
                                 if (challengesResponse.length() > 0) {
-                                    challengesResponse.setLength(challengesResponse.length() - 1);
+                                    challengesResponse.setLength(challengesResponse.length() - 2);
                                 }
                                 out.println(challengesResponse.toString());
                                 System.out.println("Challenges sent to client: " + challengesResponse.toString());
@@ -596,16 +687,158 @@ public class server {
                     } else {
                         out.println("Unauthorized access. Please login as a student.");
                     }
+                } else if (inputLine.equalsIgnoreCase("attemptChallenges")) {
+                    if (myDbHelper.isStudent(currentUsername)) {
+                        System.out.println("Current student: " + currentUsername);
+                        String schoolRegNo = myDbHelper.getRegNoByUsername(currentUsername);
+
+                        String challengeName = in.readLine(); // challenge name
+                        System.out.println("Challenge name: " + challengeName);
+
+                        // Fetch questions for the specific challenge
+                        List<String[]> questions = myDbHelper.getQuestionsForChallenge(challengeName);
+                        if (questions == null || questions.isEmpty()) {
+                            out.println("No questions available for this challenge.");
+                            continue;
+                        }
+
+                        Collections.shuffle(questions); // Randomize questions
+                        int totalQuestions = Math.min(10, questions.size());
+                        int correctAnswers = 0;
+                        int challengeMarks = 0;
+                        int wrongAnswers = 0;
+                        int skippedQuestions = 0;
+                        int totalMarks = totalQuestions * 5;
+                        int maxAttempts = 3;
+                        long challengeStartTime = System.currentTimeMillis();
+                        int totalTimeLimit = 30 * 60 * 1000; // 30 minutes in milliseconds
+                        int perQuestionTimeLimit = totalTimeLimit / totalQuestions; // Time per question
+                        int challengeScore;
+                        boolean challengeInProgress = true;
+
+                        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+                            System.out.println("Attempt " + (attempt + 1) + " of " + maxAttempts + "remaining");
+                            long attemptStartTime = System.currentTimeMillis();
+
+                            out.println(totalQuestions); // Send the total number of questions to the client
+
+                            int questionIndex = 0;
+                            while (questionIndex < totalQuestions && challengeInProgress) {
+                                if (System.currentTimeMillis() - challengeStartTime > totalTimeLimit) {
+                                    out.println("Time is up for the entire challenge!");
+                                    challengeInProgress = false;
+                                    break;
+                                }
+
+                                String[] questionData = questions.get(questionIndex);
+                                String question = questionData[0];
+                                String[] choices = { questionData[1], questionData[2], questionData[3],
+                                        questionData[4] };
+                                String correctAnswer = questionData[5];
+
+                                // Create a map from choice letter to answer
+                                Map<String, String> choiceToAnswerMap = new HashMap<>();
+                                choiceToAnswerMap.put("a", choices[0]);
+                                choiceToAnswerMap.put("b", choices[1]);
+                                choiceToAnswerMap.put("c", choices[2]);
+                                choiceToAnswerMap.put("d", choices[3]);
+
+                                // Send question to client
+                                StringBuilder questionMessage = new StringBuilder("Question ");
+                                questionMessage.append(questionIndex + 1).append(" of ").append(totalQuestions)
+                                        .append(" | Time remaining: ")
+                                        .append((perQuestionTimeLimit / 1000)
+                                                - (System.currentTimeMillis() - challengeStartTime) / 1000)
+                                        .append(" seconds | ").append(question).append("\nChoices: a) ")
+                                        .append(choices[0])
+                                        .append(" b) ").append(choices[1])
+                                        .append(" c) ").append(choices[2]).append(" d) ").append(choices[3])
+                                        .append("\n");
+
+                                String messageToSend = questionMessage.toString();
+                                out.println(messageToSend);
+                                out.flush();
+
+                                // Debugging line
+                                System.out.println("Sent to client: " + messageToSend);
+
+                                // Wait for client response
+                                String answer = in.readLine();
+                                if (answer == null) {
+                                    continue;
+                                }
+
+                                if (answer.equalsIgnoreCase("skip")) {
+                                    skippedQuestions++;
+                                    challengeMarks = challengeMarks + 0;
+                                    System.out.println("Skipped.");
+                                } else if (choiceToAnswerMap.get(answer) != null &&
+                                        choiceToAnswerMap.get(answer).equalsIgnoreCase(correctAnswer)) {
+                                    correctAnswers++;
+                                    challengeMarks = challengeMarks + 3;
+                                    System.out.println("Correct!");
+                                } else {
+                                    wrongAnswers++;
+                                    challengeMarks = challengeMarks - 3;
+                                    System.out.println("Incorrect!");
+                                }
+
+                                // Check if time for the question has expired
+                                if (System.currentTimeMillis() - attemptStartTime > perQuestionTimeLimit) {
+                                    System.out.println("Time is up for this question!");
+                                    break;
+                                }
+
+                                questionIndex++; // Move to the next question
+
+                            }
+                            out.println("Challenge completed!");
+                            challengeScore = (int) (((double) challengeMarks / totalMarks) * 100);
+
+                            // Report results for this attempt
+                            System.out.println("\nAttempt completed!");
+                            System.out.println("Total Questions: " + totalQuestions);
+                            System.out.println("Correct Answers: " + correctAnswers);
+                            System.out.println("Wrong Answers: " + wrongAnswers);
+                            System.out.println("Skipped Questions: " + skippedQuestions);
+                            System.out.println(
+                                    "Total Time Taken: "
+                                            + ((System.currentTimeMillis() - challengeStartTime) / 1000)
+                                            + " seconds");
+                            System.out.println("Challenge Marks: " + challengeMarks);
+                            System.out.println("Total Score: " + challengeScore);
+
+                            out.println("Attempt completed!\n " + "Total Questions: " + totalQuestions + "\n"
+                                    + "Correct Answers: " + correctAnswers + "\n" + "Wrong Answers: " + wrongAnswers
+                                    + "\n"
+                                    + "Skipped Questions: " + skippedQuestions + "\n" + "Total score: "
+                                    + challengeScore);
+                            out.flush();
+
+                            challengeInProgress = false;
+                            myDbHelper.saveAttemptedChallenges(currentUsername, schoolRegNo, challengeName,
+                                    totalQuestions, correctAnswers, wrongAnswers, skippedQuestions, challengeMarks,
+                                    challengeScore);
+                            break;
+                        }
+
+                    } else {
+                        out.println("Login as a student to access this command!");
+
+                    }
+
                 } else {
                     out.println("Echo: " + inputLine);
                 }
+
             }
 
         } catch (
 
         IOException e) {
             System.out.println(
-                    "Exception caught when trying to listen on port " + portNumber + " or listening for a connection");
+                    "Exception caught when trying to listen on port " + portNumber
+                            + " or listening for a connection");
             System.out.println(e.getMessage());
         }
 

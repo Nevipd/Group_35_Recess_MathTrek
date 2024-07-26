@@ -2,6 +2,7 @@
 // java client 127.0.0.1 5001
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 public class client {
     public static void main(String[] args) throws IOException {
@@ -235,42 +236,37 @@ public class client {
                             System.out.println(response);
                             System.out.println("      ");
                             System.out.println("Menu of commands to proceed \n-->viewChallenges \n-->Exit if done");
-                        } else if (response.startsWith("You are currently confirmed")) {
+
+                        } else if (response.startsWith("confirmed:")) {
+
                             System.out.println(response);
-                            System.out.println("      ");
 
                             // Read and display challenges
-                            String challenges = in.readLine();
-                            if (challenges.startsWith("Challenges:")) {
-                                String[] challengeArray = challenges.substring(11).split(",");
-                                if (challengeArray.length > 0) {
-                                    System.out.println("\nBelow are the available challenges:\n");
-                                    System.out.println(
-                                            "+-----------------+-----------------+-----------------+-----------------+-----------------+");
-                                    System.out.println(
-                                            "| Title           | Description     | Start Date      | End Date        | Num Questions   |");
-                                    System.out.println(
-                                            "+-----------------+-----------------+-----------------+-----------------+-----------------+");
-                                    for (String challengeDetails : challengeArray) {
-                                        String[] details = challengeDetails.split("\\|");
-                                        System.out.printf("| %-15s | %-15s | %-15s | %-15s | %-15s |\n",
-                                                details[0], details[1], details[2], details[3], details[4]);
-                                    }
-                                    System.out.println(
-                                            "+-----------------+-----------------+-----------------+-----------------+-----------------+\n");
-                                    System.out.println("Menu of commands to proceed \n-->attemptChallenges \n-->Exit");
-                                } else {
-                                    System.out.println("No challenges available.\n");
+                            String challengesData = response.substring(10);
+                            String[] challengeArray = challengesData.split(";;");
 
+                            if (challengeArray.length > 0) {
+                                System.out.println("\nBelow are the available challenges:\n");
+
+                                for (String challengeDetails : challengeArray) {
+                                    String[] details = challengeDetails.split("\\|");
+                                    if (details.length == 5) {
+                                        System.out.println("Name of challenge: " + details[0]);
+                                        System.out.println("Description: " + details[1]);
+                                        System.out.println("Start Date: " + details[2]);
+                                        System.out.println("End Date: " + details[3]);
+                                        System.out.println("Number of Questions: " + details[4]);
+                                        System.out.println();
+                                    }
                                 }
                             } else {
-
-                                System.out.println(response);
-                                System.err.println("FAILED TRY AGAIN");
+                                System.out.println("No challenges available");
+                                System.out.println("  ");
                             }
 
                             System.out.println("      ");
                             System.out.println("Menu of commands to proceed \n-->attemptChallenges \n-->Exit");
+
                         } else if (response.startsWith("You are currently rejected")) {
                             System.out.println(response);
                             System.out.println("      ");
@@ -278,10 +274,74 @@ public class client {
                             break;
                         } else {
                             System.out.println(response);
-                            System.out.println("      ");
+                            System.out.println(" ");
                             System.err.println("FAILED TRY AGAIN");
-                            break;
                         }
+                    } else if (userInput.equalsIgnoreCase("attemptChallenges")) {
+
+                        System.out.println("Enter the challenge name you want to attempt: ");
+                        String challengeName = stdIn.readLine();
+
+                        if (challengeName == null || challengeName.trim().isEmpty()) {
+                            System.out.println("Invalid challenge name.");
+                            return;
+                        }
+                        out.println("attemptChallenges");
+                        out.println(challengeName);
+
+                        boolean challengeInProgress = true;
+
+                        int totalQuestions = Integer.parseInt(in.readLine()); // Read the total number of questions
+
+                        int questionCount = 0;
+
+                        while (challengeInProgress && questionCount < totalQuestions) {
+                            String response = in.readLine();
+                            if (response == null) {
+                                System.out.println("Server connection closed.");
+                                break;
+                            }
+
+                            System.out.println(response); // Display the question and choices
+                            // Read the next line for choices
+                            String choicesLine = in.readLine();
+
+                            if (choicesLine != null && choicesLine.startsWith("Choices:")) {
+                                System.out.println(choicesLine); // Display choices
+                            } else {
+                                System.out.println("Unexpected response format: " + choicesLine);
+                                break; // Exit if the format is not as expected
+                            }
+
+                            if (response.startsWith("Question ")) {
+                                // Prompt the user for their answer
+                                System.out.println("Enter your answer / type skip to skip question: ");
+                                String answer = stdIn.readLine();
+
+                                // Send the user's answer back to the server
+                                out.println(answer);
+                                out.flush(); // Ensure the answer is sent immediately
+
+                                response = in.readLine();
+                                System.out.println(response);
+
+                            } else if (response.equalsIgnoreCase("Challenge completed!")) {
+                                System.out.println(response);
+                                challengeInProgress = false;
+
+                            } else if (response.equalsIgnoreCase("Attempt completed!")) {
+                                System.out.println(response);
+                                challengeInProgress = false;
+
+                            } else {
+                                System.out.println("Unexpected server response: " + response);
+                                break;
+                            }
+
+                            questionCount++;
+                        }
+                        challengeInProgress = false;
+
                     } else {
                         System.out.println(
                                 "\nInvalid choice. \nMenu options are only \n-->viewApplicants \n-->confirm \n-->exit");
@@ -295,7 +355,9 @@ public class client {
 
             }
 
-        } catch (UnknownHostException e) {
+        } catch (
+
+        UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
             System.exit(1);
         } catch (IOException e) {
