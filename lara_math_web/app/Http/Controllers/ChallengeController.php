@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ChallengeReportMail;
 use App\Models\Challenge;
 use App\Models\Question;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Spatie\Browsershot\Browsershot;
 
 class ChallengeController extends Controller
 {
@@ -34,7 +37,7 @@ class ChallengeController extends Controller
             'time_per_question' => 'required|integer|min:1',
         ]);
 
-        // Extract only the necessary fields to prevent mass assignment vulnerabilities
+        // extract only the necessary fields to prevent mass assignment vulnerabilities
         $data = $request->only(['name', 'description', 'start_date', 'end_date', 'num_questions', 'duration', 'time_per_question']);
         $challenge = Challenge::create($data);
 
@@ -43,6 +46,7 @@ class ChallengeController extends Controller
             $challenge->questions()->attach($question->id);
         }
 
+        $this->scheduleChallengeReportEmail($challenge); //to trigger the pdf email function
         return redirect()->route('challenges.index')->with('success', 'Challenge created successfully.');
     }
 
@@ -81,10 +85,11 @@ class ChallengeController extends Controller
             $challenge->questions()->attach($question->id);
         }
 
+        $this->scheduleChallengeReportEmail($challenge); //to trigger the pdf email function
         return redirect()->route('challenges.index')->with('success', 'Challenge updated successfully.');
     }
 
-    // Remove the specified challenge from the database
+    // remove the specified challenge from the database
     public function destroy(Challenge $challenge)
     {
         $challenge->delete();
@@ -115,4 +120,18 @@ class ChallengeController extends Controller
 
     //     return redirect()->route('challenges.index')->with('success', 'Challenges created successfully.');
     // }
+
+    // report email schedule function
+    protected function scheduleChallengeReportEmail(Challenge $challenge)
+    {
+        $delay = $challenge->end_date->endOfDay()->diffInSeconds(now());
+
+        // to generate the PDF immediately for future use
+        $html = view('reports.pdf', compact('challenge'))->render();
+        $pdfPath = storage_path('app/public/challenge_report_' . $challenge->id . '.pdf');
+        Browsershot::html($html)->save($pdfPath);
+
+        Mail::to('school_rep@example.com') // Replace with actual email
+            ->later(now()->addSeconds($delay), new ChallengeReportMail($challenge, $pdfPath));
+    }
 }

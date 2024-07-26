@@ -11,8 +11,8 @@
     <style>
         body {
             font-family: 'Figtree', sans-serif;
-            background-color: #EDE7F6; /* Mauve background color */
-            color: #333333; /* Dark text color */
+            background-color: #EDE7F6; /* mauve background color */
+            color: #333333; /* dark text color */
             margin: 0;
             padding: 0;
         }
@@ -20,7 +20,7 @@
             position: relative;
             text-align: center;
             padding: 20px;
-            background-image: url('/images/bg4.png'); /* Background image for the top quarter */
+            background-image: url('/images/bg4.png'); /* background image for the top quarter */
             background-size: cover;
             background-position: center;
             height: 25vh;
@@ -30,15 +30,15 @@
         }
         .header a {
             margin: 0 10px;
-            color: #FFFFFF; /* White text color */
+            color: #FFFFFF; /* white text color */
             text-decoration: none;
             font-weight: bold;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for buttons */
+            background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background for buttons */
             padding: 10px 20px;
             border-radius: 5px;
         }
         .header a:hover {
-            background-color: rgba(0, 0, 0, 0.7); /* Darker semi-transparent background on hover */
+            background-color: rgba(0, 0, 0, 0.7); /* darker semi-transparent background on hover */
         }
         .container {
             max-width: 1200px;
@@ -48,12 +48,12 @@
         }
         .title {
             font-size: 2.5rem;
-            color: #333333; /* Dark text color */
+            color: #333333; /* dark text color */
             margin-top: 20px;
         }
         .subtitle {
             font-size: 1.25rem;
-            color: #666666; /* Medium dark text color */
+            color: #666666; /* medium dark text color */
             margin-top: 10px;
         }
         .cards {
@@ -64,7 +64,7 @@
             margin-top: 20px;
         }
         .card {
-            background-color: #FFF9C4; /* Cream card background */
+            background-color: #FFF9C4; /* cream card background */
             border-radius: 15px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 300px;
@@ -76,7 +76,7 @@
             border-radius: 10px;
         }
         .button {
-            background-color: #B3C7E6; /* Blue button color */
+            background-color: #B3C7E6; /* blue button color */
             color: #fff;
             padding: 10px 20px;
             border: none;
@@ -86,7 +86,7 @@
             display: inline-block;
         }
         .button:hover {
-            background-color: #4A90E2; /* Darker blue on hover */
+            background-color: #4A90E2; /* darker blue on hover */
         }
     </style>
 </head>

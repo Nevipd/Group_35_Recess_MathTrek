@@ -22,7 +22,10 @@
                         {{ __('Manage Participants') }}
                     </x-nav-link>
                     <x-nav-link :href="route('challenges.index')" :active="request()->routeIs('challenges.index')">
-                        {{ __('Challenges') }}
+                        {{ __(' Manage Challenges') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.index')">
+                        {{ __(' Manage Reports') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -86,8 +89,11 @@
                 {{ __('Manage Participants') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('challenges.index')" :active="request()->routeIs('challenges.index')">
-                {{ __('Challenges') }}
+                {{ __('Manage Challenges') }}
             </x-responsive-nav-link>
+            <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.index')">
+                        {{ __(' Manage Reports') }}
+                    </x-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->

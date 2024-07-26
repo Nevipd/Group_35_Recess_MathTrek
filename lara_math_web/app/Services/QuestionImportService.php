@@ -1,5 +1,5 @@
 <?php
-//additional adjustment
+// the sercvice class used to dictate the excel file uplaods
 namespace App\Services;
 
 use App\Models\Question;
@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class QuestionImportService
 {
-    public function importQuestions(string $questionsFilePath, string $answersFilePath)
+    public function importQuestions(string $questionsFilePath, string $answersFilePath, string $questionsFileName, string $answersFileName, string $description)
     {
         $questions = SimpleExcelReader::create($questionsFilePath)->getRows()->toArray();
         $answers = SimpleExcelReader::create($answersFilePath)->getRows()->keyBy('question_text')->toArray();
@@ -35,6 +35,8 @@ class QuestionImportService
                 'choice3' => $questionRow['choice3'],
                 'choice4' => $questionRow['choice4'],
                 'correct_choice' => $correctChoice,
+                'file_name' => $questionsFileName,
+                'description' => $description,
             ]);
         }
     }

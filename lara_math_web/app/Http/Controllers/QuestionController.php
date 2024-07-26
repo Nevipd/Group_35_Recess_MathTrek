@@ -16,27 +16,39 @@ class QuestionController extends Controller
          return view('questions.import');
      }
  
-     // import  questions
-     public function import(Request $request, QuestionImportService $questionImportService)
-    {
-        // validate request
-        $request->validate([
-            'questions_file' => 'required|file|mimes:xlsx,csv',
-            'answers_file' => 'required|file|mimes:xlsx,csv',
-        ]);
 
-        try {
-            // store the uploaded files
-            $questionsFilePath = $request->file('questions_file')->store('imports');
-            $answersFilePath = $request->file('answers_file')->store('imports');
-
-            // import the questions
-            $questionImportService->importQuestions(storage_path('app/' . $questionsFilePath), storage_path('app/' . $answersFilePath));
-            return redirect()->route('questions.index')->with('success', 'Questions imported successfully.');
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Failed to import questions: ' . $e->getMessage()]);
-        }
-    }
+            // import  questions
+            public function import(Request $request, QuestionImportService $questionImportService)
+            {
+                // validate request
+                $request->validate([
+                    'questions_file' => 'required|file|mimes:xlsx,csv',
+                    'answers_file' => 'required|file|mimes:xlsx,csv',
+                    'file_name' => 'required|string|max:255',
+                    'description' => 'required|string',
+                ]);
+            
+                try {
+                    // store the uploaded files
+                    $questionsFile = $request->file('questions_file');
+                    $answersFile = $request->file('answers_file');
+            
+                    $questionsFilePath = $questionsFile->store('imports');
+                    $answersFilePath = $answersFile->store('imports');
+            
+                    // store the file names
+                    $questionsFileName = $request->file_name;
+                    $answersFileName = $answersFile->getClientOriginalName();
+            
+                    // import the questions
+                    $questionImportService->importQuestions(storage_path('app/' . $questionsFilePath), storage_path('app/' . $answersFilePath), $questionsFileName, $answersFileName, $request->description);
+                    
+                    return redirect()->route('questions.index')->with('success', 'Questions imported successfully.');
+                } catch (\Exception $e) {
+                    return redirect()->back()->withErrors(['error' => 'Failed to import questions: ' . $e->getMessage()]);
+                }
+            }
+            
 
     //to use the service through a constructor
     protected $questionImportService;
@@ -50,6 +62,8 @@ class QuestionController extends Controller
     public function index()
     {
         $questions = Question::all();
+            // Debugging statement
+        // dd($questions);
         return view('questions.index', compact('questions'));
     }
 

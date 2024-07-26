@@ -22,4 +22,28 @@ class Challenge extends Model
     {
         return $this->belongsToMany(Question::class);
     }
+
+    // function for averages
+    public function getAverageMarksAttribute()
+    {
+        return $this->participants->avg('pivot.marks');
+    }
+        
+    // many to many relationship
+    public function participants()
+    {
+        return $this->belongsToMany(Participant::class)->withPivot('marks')->withTimestamps();
+    }
+
+    
+    public function getBestMarksAttribute()
+    {
+        return $this->participants()->max('pivot.marks');
+    }
+    
+    public function getWorstMarksAttribute()
+    {
+        return $this->participants()->min('pivot.marks');
+    }
+    
 }
