@@ -2,7 +2,6 @@
 // java client 127.0.0.1 5001
 import java.io.*;
 import java.net.*;
-import java.util.*;
 
 public class client {
     public static void main(String[] args) throws IOException {
@@ -53,6 +52,9 @@ public class client {
                         System.out.print("Enter absolute path of the image file(C:\\Users\\...): ");
                         String image_file = stdIn.readLine();
 
+                        System.out.print("Enter your password: ");
+                        String password = stdIn.readLine();
+
                         out.println(userInput);
                         out.println(username);
                         out.println(firstName);
@@ -61,6 +63,7 @@ public class client {
                         out.println(date_of_birth);
                         out.println(school_registration_number);
                         out.println(image_file);
+                        out.println(password);
 
                         String response = in.readLine();
                         if (response.startsWith("Error")) {
@@ -81,13 +84,13 @@ public class client {
                             System.out.print("Enter username: ");
                             String username = stdIn.readLine();
 
-                            System.out.print("Enter school registration number: ");
-                            String schoolRegistrationNumber = stdIn.readLine();
+                            System.out.print("Enter your password: ");
+                            String password = stdIn.readLine();
 
                             out.println(userInput);
                             out.println("student");
                             out.println(username);
-                            out.println(schoolRegistrationNumber);
+                            out.println(password);
 
                         } else if (loginType.equalsIgnoreCase("representative")) {
                             System.out.print("Enter representative name: ");
@@ -326,12 +329,19 @@ public class client {
                                 System.out.println(response);
 
                             } else if (response.equalsIgnoreCase("Challenge completed!")) {
-                                System.out.println(response);
+                                System.out.println("Challenge completion message received: " + response);
                                 challengeInProgress = false;
 
                             } else if (response.equalsIgnoreCase("Attempt completed!")) {
-                                System.out.println(response);
+                                System.out.println("Final report start received: " + response);
                                 challengeInProgress = false;
+
+                                // Read and display the final summary
+                                String finalSummary = in.readLine();
+                                while (finalSummary != null && !finalSummary.isEmpty()) {
+                                    System.out.println("Final report line: " + finalSummary);
+                                    finalSummary = in.readLine();
+                                }
 
                             } else {
                                 System.out.println("Unexpected server response: " + response);
