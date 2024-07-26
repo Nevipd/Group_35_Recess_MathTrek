@@ -1,5 +1,4 @@
 @extends('dashboard')
-<!-- display the form -->
 @section('content')
 <h1 class="text-2xl font-bold mb-6">Import Questions</h1>
 
@@ -22,6 +21,14 @@
     <div class="form-group">
         <label for="answers_file" class="block text-sm font-medium text-gray-700">Answers File</label>
         <input type="file" name="answers_file" id="answers_file" class="form-control mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+    </div>
+    <div class="form-group">
+        <label for="file_name" class="block text-sm font-medium text-gray-700">File Name</label>
+        <input type="text" name="file_name" id="file_name" class="form-control mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+    </div>
+    <div class="form-group">
+        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea name="description" id="description" class="form-control mt-1 block w-full rounded-md border-gray-300 shadow-sm" required></textarea>
     </div>
     <button type="submit" class="btn btn-primary bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Import</button>
 </form>

@@ -40,11 +40,7 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        // // configuring the school rep guard 
-        // 'school' => [
-        //     'driver' => 'session',
-        //     'provider' => 'school_representatives',
-        // ],
+
     ],
 
     /*
@@ -70,10 +66,6 @@ return [
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
-        // 'school_representatives' => [
-        //     'driver' => 'eloquent',
-        //     'model' => App\Models\SchoolRepresentative::class,
-        // ],
 
         // 'users' => [
         //     'driver' => 'database',

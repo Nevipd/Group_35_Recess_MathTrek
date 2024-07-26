@@ -16,5 +16,17 @@ class School extends Model
         'representative_email',
         'representative_name',
     ];
-    /** */
+    
+    // the relationship with the Participant model defined
+    public function participants()
+    {
+        return $this->hasMany(Participant::class, 'school_registration_number', 'school_registration_number');
+    }
+
+    // specify relationship with representative
+    public function representative()
+    {
+        return $this->hasOne(Representative::class);
+    }
+
 }

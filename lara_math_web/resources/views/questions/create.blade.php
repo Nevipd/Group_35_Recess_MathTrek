@@ -1,7 +1,7 @@
 @extends('dashboard')
 
 @section('content')
-    <h1 class="text-2xl font-bold mb-6">Add New Question</h1>
+    <h1 class="text-2xl font-bold mb-6"></h1>
 
     @if ($errors->any())
         <div class="alert alert-danger mb-4">
