@@ -26,12 +26,21 @@ public class server {
         }
 
         public void createTable() {
-            String query = "CREATE TABLE IF NOT EXISTS student(id INT PRIMARY KEY UNIQUE AUTO_INCREMENT, username VARCHAR(20), firstName VARCHAR(20), lastName VARCHAR(20), emailAddress VARCHAR(40), date_of_birth DATE, school_registration_number VARCHAR(55), image_file BLOB)";
+            String query = "CREATE TABLE IF NOT EXISTS student(id INT PRIMARY KEY UNIQUE AUTO_INCREMENT, username VARCHAR(20), firstName VARCHAR(20), lastName VARCHAR(20), emailAddress VARCHAR(40), date_of_birth DATE, school_registration_number VARCHAR(55), image_file BLOB, password VARCHAR(255))";
             String query1 = "CREATE TABLE IF NOT EXISTS schools(id INT PRIMARY KEY UNIQUE AUTO_INCREMENT, school_name VARCHAR(55), district VARCHAR(20), school_registration_number VARCHAR(55), representative_name VARCHAR(20), representative_email VARCHAR(40))";
             String query2 = "CREATE TABLE IF NOT EXISTS applicants(id INT PRIMARY KEY UNIQUE AUTO_INCREMENT, username VARCHAR(20), firstName VARCHAR(20), lastName VARCHAR(20), emailAddress VARCHAR(40), date_of_birth DATE, school_registration_number VARCHAR(55), status VARCHAR(20))";
             String query3 = "CREATE TABLE IF NOT EXISTS participants(id INT PRIMARY KEY UNIQUE AUTO_INCREMENT, username VARCHAR(20), school_registration_number VARCHAR(55), status VARCHAR(10))";
             String query4 = "CREATE TABLE IF NOT EXISTS rejected(id INT PRIMARY KEY UNIQUE AUTO_INCREMENT, username VARCHAR(20), school_registration_number VARCHAR(55), status VARCHAR(10))";
             String query5 = "CREATE TABLE IF NOT EXISTS attempted_challenges (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(255) NOT NULL, school_reg_no VARCHAR(255) NOT NULL, challenge_name VARCHAR(255) NOT NULL, total_questions INT NOT NULL, correct_answers INT NOT NULL, wrong_answers INT NOT NULL, skipped_questions INT NOT NULL, challenge_marks INT NOT NULL, total_score INT NOT NULL, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+            String query6 = "CREATE TABLE IF NOT EXISTS representatives (" +
+                    "id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, " +
+                    "school_id BIGINT UNSIGNED NOT NULL, " +
+                    "representative_email VARCHAR(255) NOT NULL, " +
+                    "representative_name VARCHAR(255) NOT NULL, " +
+                    "password VARCHAR(255) NOT NULL, " +
+                    "created_at TIMESTAMP NULL DEFAULT NULL, " +
+                    "updated_at TIMESTAMP NULL DEFAULT NULL " +
+                    ")";
 
             try {
                 Statement statement = connection.createStatement();
@@ -41,6 +50,7 @@ public class server {
                 statement.execute(query3);
                 statement.execute(query4);
                 statement.execute(query5);
+                statement.execute(query6);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -62,12 +72,12 @@ public class server {
         }
 
         public String registerStudent(String username, String firstName, String lastName, String emailAddress,
-                String date_of_birth, String school_registration_number, String image_file_path) {
+                String date_of_birth, String school_registration_number, String image_file_path, String password) {
 
             if (!isValidSchoolRegistrationNumber(school_registration_number)) {
                 return "Error: Invalid school registration number. Registration denied.";
             }
-            String query = "INSERT INTO student (username, firstName, lastName, emailAddress, date_of_birth, school_registration_number, image_file) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO student (username, firstName, lastName, emailAddress, date_of_birth, school_registration_number, image_file, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -77,6 +87,7 @@ public class server {
                 preparedStatement.setString(4, emailAddress);
                 preparedStatement.setString(5, date_of_birth);
                 preparedStatement.setString(6, school_registration_number);
+                preparedStatement.setString(8, password);
 
                 // Read image file and set it as a BLOB
                 File imageFile = new File(image_file_path);
@@ -105,12 +116,12 @@ public class server {
             }
         }
 
-        public String loginStudent(String username, String schoolRegistrationNumber) {
-            String query = "SELECT * FROM student WHERE username = ? AND school_registration_number = ?";
+        public String loginStudent(String username, String password) {
+            String query = "SELECT * FROM student WHERE username = ? AND password = ?";
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, username);
-                preparedStatement.setString(2, schoolRegistrationNumber);
+                preparedStatement.setString(2, password);
                 ResultSet rs = preparedStatement.executeQuery();
                 if (rs.next()) {
                     return "Login Successful!";
@@ -354,6 +365,7 @@ public class server {
                 ResultSet resultSet = preparedStatement.executeQuery();
                 if (resultSet.next()) {
                     String source = resultSet.getString("source");
+                    @SuppressWarnings("unused")
                     String status = resultSet.getString("status");
 
                     if (source.equals("participants")) {
@@ -497,6 +509,7 @@ public class server {
     // END OF DATABASE METHODS
     // ...........................//
 
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         if (args.length != 1) {
             System.err.println("Usage: java EchoServer <port number>");
@@ -537,9 +550,10 @@ public class server {
                     String date_of_birth = in.readLine();
                     String school_registration_number = in.readLine();
                     String image_file = in.readLine();
+                    String password = in.readLine();
 
                     String response = myDbHelper.registerStudent(username, firstName, lastName, emailAddress,
-                            date_of_birth, school_registration_number, image_file);
+                            date_of_birth, school_registration_number, image_file, password);
                     out.println(response);
                     if (response != null) {
                         out.println("Registration successful");
@@ -561,16 +575,16 @@ public class server {
 
                     if (userType.equalsIgnoreCase("student")) {
                         String username = in.readLine();
-                        String schoolRegistrationNumber = in.readLine();
+                        String password = in.readLine();
 
-                        String loginResult = myDbHelper.loginStudent(username, schoolRegistrationNumber);
+                        String loginResult = myDbHelper.loginStudent(username, password);
                         if (loginResult != null) {
                             out.println("Login Successful!");
                             System.out.println("Student login successful");
                             currentUsername = username;
 
                         } else {
-                            out.println("Invalid username or school registration number. Login Failed");
+                            out.println("Invalid username or password. Login Failed");
                             System.out.println("Invalid username or school registration number. Login Failed");
                         }
                     } else if (userType.equalsIgnoreCase("representative")) {
@@ -795,25 +809,24 @@ public class server {
                             out.println("Challenge completed!");
                             challengeScore = (int) (((double) challengeMarks / totalMarks) * 100);
 
-                            // Report results for this attempt
-                            System.out.println("\nAttempt completed!");
-                            System.out.println("Total Questions: " + totalQuestions);
-                            System.out.println("Correct Answers: " + correctAnswers);
-                            System.out.println("Wrong Answers: " + wrongAnswers);
-                            System.out.println("Skipped Questions: " + skippedQuestions);
-                            System.out.println(
-                                    "Total Time Taken: "
-                                            + ((System.currentTimeMillis() - challengeStartTime) / 1000)
-                                            + " seconds");
-                            System.out.println("Challenge Marks: " + challengeMarks);
-                            System.out.println("Total Score: " + challengeScore);
+                            System.out.println("Preparing to send challenge report to client...");
 
-                            out.println("Attempt completed!\n " + "Total Questions: " + totalQuestions + "\n"
-                                    + "Correct Answers: " + correctAnswers + "\n" + "Wrong Answers: " + wrongAnswers
-                                    + "\n"
-                                    + "Skipped Questions: " + skippedQuestions + "\n" + "Total score: "
-                                    + challengeScore);
+                            // Report results for this attempt
+                            System.out.println("Sending final report to client...");
+                            out.println("Attempt completed!");
                             out.flush();
+
+                            String reportMessage = "Attempt completed!\n" +
+                                    "Total Questions: " + totalQuestions + "\n" +
+                                    "Correct Answers: " + correctAnswers + "\n" +
+                                    "Wrong Answers: " + wrongAnswers + "\n" +
+                                    "Skipped Questions: " + skippedQuestions + "\n" +
+                                    "Total score: " + challengeScore;
+
+                            out.println(reportMessage);
+                            out.flush(); // Ensure the report is sent immediately
+
+                            System.out.println("Final report sent to client:\n" + reportMessage);
 
                             challengeInProgress = false;
                             myDbHelper.saveAttemptedChallenges(currentUsername, schoolRegNo, challengeName,
