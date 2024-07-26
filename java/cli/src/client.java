@@ -238,6 +238,38 @@ public class client {
                         } else if (response.startsWith("You are currently confirmed")) {
                             System.out.println(response);
                             System.out.println("      ");
+
+                            // Read and display challenges
+                            String challenges = in.readLine();
+                            if (challenges.startsWith("Challenges:")) {
+                                String[] challengeArray = challenges.substring(11).split(",");
+                                if (challengeArray.length > 0) {
+                                    System.out.println("\nBelow are the available challenges:\n");
+                                    System.out.println(
+                                            "+-----------------+-----------------+-----------------+-----------------+-----------------+");
+                                    System.out.println(
+                                            "| Title           | Description     | Start Date      | End Date        | Num Questions   |");
+                                    System.out.println(
+                                            "+-----------------+-----------------+-----------------+-----------------+-----------------+");
+                                    for (String challengeDetails : challengeArray) {
+                                        String[] details = challengeDetails.split("\\|");
+                                        System.out.printf("| %-15s | %-15s | %-15s | %-15s | %-15s |\n",
+                                                details[0], details[1], details[2], details[3], details[4]);
+                                    }
+                                    System.out.println(
+                                            "+-----------------+-----------------+-----------------+-----------------+-----------------+\n");
+                                    System.out.println("Menu of commands to proceed \n-->attemptChallenges \n-->Exit");
+                                } else {
+                                    System.out.println("No challenges available.\n");
+
+                                }
+                            } else {
+
+                                System.out.println(response);
+                                System.err.println("FAILED TRY AGAIN");
+                            }
+
+                            System.out.println("      ");
                             System.out.println("Menu of commands to proceed \n-->attemptChallenges \n-->Exit");
                         } else if (response.startsWith("You are currently rejected")) {
                             System.out.println(response);
