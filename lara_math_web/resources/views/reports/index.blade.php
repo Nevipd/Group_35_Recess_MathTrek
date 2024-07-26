@@ -4,7 +4,6 @@
     <h1 class="text-2xl font-bold mb-6">Reports</h1>
 
     <div class="mb-4">
-        
         <form action="{{ route('reports.sendToAll') }}" method="POST" class="inline-block">
             @csrf
             <button type="submit" class="btn btn-primary bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">
@@ -81,7 +80,7 @@
                     <td class="px-4 py-2 flex space-x-2">
                         <a href="{{ route('reports.show', $report->id) }}" class="btn btn-info bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-md">View</a>
                         <a href="{{ route('reports.edit', $report->id) }}" class="btn btn-warning bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded-md">Edit</a>
-                        <form action="{{ route('reports.destroy', $report->id) }}" method="POST" onsubmit="return confirm('Are you sure?');" class="inline-block">
+                        <form action="{{ route('reports.destroy', $report->id) }}" method="POST" class="inline-block">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded-md">Delete</button>
@@ -91,51 +90,80 @@
             @endforeach
         </tbody>
     </table> -->
+@endsection
 
+@section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        var ctx = document.getElementById('challengePerformanceChart').getContext('2d');
-        var challengePerformanceChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Best Challenge', 'Worst Challenge'],
-                datasets: [{
-                    label: 'Average Marks',
-                    data: [{{ $bestChallenge->average_marks }}, {{ $worstChallenge->average_marks }}],
-                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],
-                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
-                    borderWidth: 1
-                }]
-            }
-        });
+        document.addEventListener('DOMContentLoaded', function () {
+            // Challenge Performance Chart
+            const challengePerformanceCtx = document.getElementById('challengePerformanceChart').getContext('2d');
+            const challengePerformanceChart = new Chart(challengePerformanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Best Challenge', 'Worst Challenge'],
+                    datasets: [{
+                        label: 'Average Marks',
+                        data: [{{ $bestChallengeMarks }}, {{ $worstChallengeMarks }}],
+                        backgroundColor: ['#4caf50', '#f44336'],
+                        borderColor: ['#388e3c', '#d32f2f'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
 
-        var ctx2 = document.getElementById('schoolParticipationChart').getContext('2d');
-        var schoolParticipationChart = new Chart(ctx2, {
-            type: 'pie',
-            data: {
-                labels: ['Most Participants', 'Least Participants'],
-                datasets: [{
-                    data: [{{ $schoolsWithMostParticipants->participants_count }}, {{ $schoolsWithLeastParticipants->participants_count }}],
-                    backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'],
-                    borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'],
-                    borderWidth: 1
-                }]
-            }
-        });
+            // School Participation Chart
+            const schoolParticipationCtx = document.getElementById('schoolParticipationChart').getContext('2d');
+            const schoolParticipationChart = new Chart(schoolParticipationCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Most Participants', 'Least Participants'],
+                    datasets: [{
+                        label: 'Number of Participants',
+                        data: [{{ $schoolsWithMostParticipants->participants_count ?? 0 }}, {{ $schoolsWithLeastParticipants->participants_count ?? 0 }}],
+                        backgroundColor: ['#ffeb3b', '#9c27b0'],
+                        borderColor: ['#fbc02d', '#7b1fa2'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
 
-        var ctx3 = document.getElementById('peakHoursChart').getContext('2d');
-        var peakHoursChart = new Chart(ctx3, {
-            type: 'line',
-            data: {
-                labels: {!! json_encode($peakAttemptHours->pluck('hour')) !!},
-                datasets: [{
-                    label: 'Attempts',
-                    data: {!! json_encode($peakAttemptHours->pluck('count')) !!},
-                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                    borderColor: 'rgba(153, 102, 255, 1)',
-                    borderWidth: 1
-                }]
-            }
+            // Peak Hours Chart
+            const peakHoursCtx = document.getElementById('peakHoursChart').getContext('2d');
+            const peakHoursChart = new Chart(peakHoursCtx, {
+                type: 'line',
+                data: {
+                    labels: @json($peakAttemptHours->pluck('hour')),
+                    datasets: [{
+                        label: 'Number of Attempts',
+                        data: @json($peakAttemptHours->pluck('count')),
+                        backgroundColor: '#03a9f4',
+                        borderColor: '#0288d1',
+                        borderWidth: 1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
         });
     </script>
 @endsection

@@ -15,12 +15,8 @@ return new class extends Migration
             $table->id();
             /**table values custom to the system */
             $table->string('username')->unique();
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('email')->unique();
-            $table->date('date_of_birth');
             $table->string('school_registration_number');
-            $table->string('image_file');
+            $table->string('status');
             $table->timestamps();
         });
     }
