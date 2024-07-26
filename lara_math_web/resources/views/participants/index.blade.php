@@ -2,7 +2,8 @@
 
 @section('content')
     <h1 class="text-2xl font-bold mb-6">Participants</h1>
-    <a href="{{ route('participants.create') }}" class="btn btn-primary mb-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md">Add New Participant</a>
+    <!-- Remove the Add New Participant button -->
+    <!-- <a href="{{ route('participants.create') }}" class="btn btn-primary mb-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md">Add New Participant</a> -->
     <table class="table-auto w-full bg-white shadow-md rounded-lg">
         <thead>
             <tr class="bg-gray-200 text-gray-700">

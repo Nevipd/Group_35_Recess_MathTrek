@@ -19,10 +19,9 @@
             <li><a href="{{ route('challenges.index') }}" class="text-blue-300 hover:text-blue-500 hover:underline transition-colors duration-200">Create Challenge</a></li>
             <li><a href="{{ route('questions.index') }}" class="text-blue-300 hover:text-blue-500 hover:underline transition-colors duration-200">Upload Questions</a></li>
             <li><a href="{{ route('reports.index') }}" class="text-blue-300 hover:text-blue-500 hover:underline transition-colors duration-200">View Reports</a></li>
-            <li><a href="#" class="text-blue-300 hover:text-blue-500 hover:underline transition-colors duration-200">Settings</a></li>
+
         </ul>
     </div>
-
     <!-- Notifications Card -->
     <div class="bg-green-100 p-6 rounded-2xl shadow-lg backdrop-blur-md">
         <h3 class="text-lg font-semibold mb-4">Notifications</h3>

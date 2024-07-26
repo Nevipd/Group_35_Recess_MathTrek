@@ -9,7 +9,8 @@ class Question extends Model
 {
     use HasFactory;
     /** here i specified the fields  */
-    protected $fillable = ['question_text', 'choice1', 'choice2', 'choice3', 'choice4', 'correct_choice'];
+    protected $fillable = ['question_text', 'choice1', 'choice2', 'choice3', 'choice4', 'correct_choice','file_name',
+    'description',];
     /** */
     public function challenges()
     {

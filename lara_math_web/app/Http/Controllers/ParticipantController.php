@@ -19,35 +19,35 @@ class ParticipantController extends Controller
     /**
      * to show the form for creating a new resource.
      */
-    public function create()
-    {
-        return view('participants.create');
-    }
+    // public function create()
+    // {
+    //     return view('participants.create');
+    // }
 
-    /**
-     * to store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'username'=> 'required',
-            'first_name'=> 'required',
-            'last_name'=> 'required',
-            'email' => 'required|email|unique:participants,email',
-            'date_of_birth'=> 'required|date',
-            'school_registration_number'=> 'required',
-            'image_file'=> 'required',
-        ]);
+    // /**
+    //  * to store a newly created resource in storage.
+    //  */
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'username'=> 'required',
+    //         'first_name'=> 'required',
+    //         'last_name'=> 'required',
+    //         'email' => 'required|email|unique:participants,email',
+    //         'date_of_birth'=> 'required|date',
+    //         'school_registration_number'=> 'required',
+    //         'image_file'=> 'required',
+    //     ]);
 
-        try {
-        Participant::create($request->all());
-        } catch (\Illuminate\Database\QueryException $e) {
-            return redirect()->back()->withErrors(['username' => 'The username has already been taken!'])->withInput();
-        }
+    //     try {
+    //     Participant::create($request->all());
+    //     } catch (\Illuminate\Database\QueryException $e) {
+    //         return redirect()->back()->withErrors(['username' => 'The username has already been taken!'])->withInput();
+    //     }
 
-        return redirect()->route('participants.index')
-                         ->with('success', 'Participant created successfully.');
-    }
+    //     return redirect()->route('participants.index')
+    //                      ->with('success', 'Participant created successfully.');
+    // }
 
     /**
      * to display the specified resource.
@@ -104,4 +104,4 @@ class ParticipantController extends Controller
         return redirect()->route('participants.index')
                          ->with('success', 'Participant deleted successfully.');
     }
-}
+}       
