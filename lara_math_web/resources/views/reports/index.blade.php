@@ -51,16 +51,25 @@
         <div>
             <h3 class="text-lg font-medium mb-2">Challenge Performance</h3>
             <canvas id="challengePerformanceChart" class="bg-white p-4 rounded-lg shadow-md"></canvas>
+            <!-- debugging -->
+            <p>Best Challenge Marks: {{ $bestChallengeMarks }}</p>
+            <p>Worst Challenge Marks: {{ $worstChallengeMarks }}</p>
         </div>
         <div>
             <h3 class="text-lg font-medium mb-2">School Participation</h3>
             <canvas id="schoolParticipationChart" class="bg-white p-4 rounded-lg shadow-md"></canvas>
+            <!-- debugging -->
+            <p>Most Participants: {{ $schoolsWithMostParticipants->participants_count ?? 0 }}</p>
+            <p>Least Participants: {{ $schoolsWithLeastParticipants->participants_count ?? 0 }}</p>
         </div>
     </div>
 
     <div class="mb-6">
         <h3 class="text-lg font-medium mb-2">Attempt Hours</h3>
         <canvas id="peakHoursChart" class="bg-white p-4 rounded-lg shadow-md"></canvas>
+        <!-- debugging -->
+        <p>Attempt Hours: @json($peakAttemptHours->pluck('hour'))</p>
+        <p>Attempt Counts: @json($peakAttemptHours->pluck('count'))</p>
     </div>
 
     <h2 class="text-xl font-semibold mb-4">All Reports</h2>
@@ -96,7 +105,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Challenge Performance Chart
+            
+
+            // some charts
             const challengePerformanceCtx = document.getElementById('challengePerformanceChart').getContext('2d');
             const challengePerformanceChart = new Chart(challengePerformanceCtx, {
                 type: 'bar',
@@ -104,7 +115,7 @@
                     labels: ['Best Challenge', 'Worst Challenge'],
                     datasets: [{
                         label: 'Average Marks',
-                        data: [{{ $bestChallengeMarks }}, {{ $worstChallengeMarks }}],
+                        data: [85, 40], // place holder data
                         backgroundColor: ['#4caf50', '#f44336'],
                         borderColor: ['#388e3c', '#d32f2f'],
                         borderWidth: 1
@@ -119,7 +130,7 @@
                 }
             });
 
-            // School Participation Chart
+          
             const schoolParticipationCtx = document.getElementById('schoolParticipationChart').getContext('2d');
             const schoolParticipationChart = new Chart(schoolParticipationCtx, {
                 type: 'pie',
@@ -127,7 +138,7 @@
                     labels: ['Most Participants', 'Least Participants'],
                     datasets: [{
                         label: 'Number of Participants',
-                        data: [{{ $schoolsWithMostParticipants->participants_count ?? 0 }}, {{ $schoolsWithLeastParticipants->participants_count ?? 0 }}],
+                        data: [150, 10], // placeholder data
                         backgroundColor: ['#ffeb3b', '#9c27b0'],
                         borderColor: ['#fbc02d', '#7b1fa2'],
                         borderWidth: 1
@@ -138,25 +149,26 @@
                 }
             });
 
-            // Peak Hours Chart
+            
             const peakHoursCtx = document.getElementById('peakHoursChart').getContext('2d');
             const peakHoursChart = new Chart(peakHoursCtx, {
                 type: 'line',
                 data: {
-                    labels: @json($peakAttemptHours->pluck('hour')),
+                    labels: ['10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM'], // dummy
                     datasets: [{
                         label: 'Number of Attempts',
-                        data: @json($peakAttemptHours->pluck('count')),
+                        data: [5, 15, 30, 50, 40, 25, 10], // dummy
                         backgroundColor: '#03a9f4',
                         borderColor: '#0288d1',
-                        borderWidth: 1,
+                        borderWidth: 2,
                         fill: false
                     }]
                 },
                 options: {
                     scales: {
                         x: {
-                            beginAtZero: true
+                            type: 'category',
+                            labels: ['10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM'] //dummy
                         },
                         y: {
                             beginAtZero: true
